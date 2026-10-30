@@ -19,6 +19,7 @@ export const CompactLayout = ({ panels, counts }) => {
             className={`flex flex-col items-center gap-0.5 py-2 text-[0.78rem] font-medium transition-colors border-b-2 ${tab === key ? "border-emerald-400 text-white" : "border-transparent text-white hover:text-white"}`}>
             <Icon size={15} />
             <span>{label}{counts[key] ? ` ${counts[key]}` : ""}</span>
+            {key === "suggestions" && counts.wrap && tab !== key && <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" data-testid="compact-wrap-badge" />}
           </button>
         ))}
       </nav>

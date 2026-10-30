@@ -1,0 +1,25 @@
+{
+  "summary": "Iteration 5: Wrap-Up Nudge. Backend: /api/suggest with focus='wrapup' streams 4 'TYPE | question' closing lines. An empty transcript returns 400. Balanced mode still returns 4 lines (3/3 pytest pass). Frontend (1920x1080): seeded segments at now-27 and now-26 min, target 30, one open topic. Nothing shows on reload (no recent activity). A manual guest line triggers the toast '5 minutes left — time to start wrapping up' and wrapup-nudge appears above the Ask Next panel. wrapup-minutes-left shows '3 min left'. wrapup-open-topics shows only the open topic (the covered one is excluded). 4 closing questions stream in. Pin adds to pinned-question-item with the matching text. Refresh shows the spinner and loads 4 new questions. Dismiss hides the nudge, and it stays hidden after another line. Target 60 removes the nudge; lowering back to 30 brings it back (straight away, because the last line was under 60s old) and it stays after a new line. Target 20 shows '8 min over'. Compact 390px: the nudge shows on the Ask tab, below the talk meter and above suggestions, with 4 questions and no horizontal scroll. Regression: main suggestions still generate 4 cards; talk meter, pacing and shortlist render.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Compact 390px", "issues": ["Wrap-up header wraps: 'TIME TO WRAP UP' and '3 min left' each break onto two lines. Consider a smaller eyebrow, or putting minutes-left on its own row on narrow screens."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iter5_wrapup.py", "/app/test_reports/pytest/pytest_iter5.xml"],
+  "action_items": ["Optional: tidy the compact-mode wrap-up header wrapping."],
+  "critical_code_review_comments": [
+    "When not live, 'active' is computed from Date.now() only at render time, and no timer re-renders it. A nudge window entered without a new line (e.g. lowering the target over 60s after the last line) depends on some other re-render. This is acceptable given the spec.",
+    "Lowering the target re-triggers the nudge immediately (no new line needed) if the last line is under 60s old. This is consistent with the activity rule.",
+    "Wrap-up open topics are passed to the LLM. The model sometimes treats an open topic as already discussed (e.g. 'You just closed your Series B'). The prompt could state more firmly that open topics have not been discussed.",
+    "Compact mode gives no tab badge when the nudge fires while another tab is active. Only the toast signals it."
+  ],
+  "updated_files": ["/app/backend/tests/test_iter5_wrapup.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "localStorage only (fu-segments, fu-topics, fu-target-min, fu-compact). No DB data was created.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Seed localStorage, then add a line via manual-line-input/manual-line-submit (the default speaker is guest) to trigger the wrap-up nudge. Compact tabs: compact-tab-suggestions (Ask), compact-tab-transcript (Live), compact-tab-coverage, compact-tab-pinned, compact-tab-setup."
+}

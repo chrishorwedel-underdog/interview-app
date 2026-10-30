@@ -14,6 +14,10 @@ Web app open during an interview that listens to the host's questions and the gu
 - Frontend React: host mic via browser Web Speech API (free, Chrome/Edge); guest audio via shared tab (getDisplayMedia) + voice-activity detection → chunks cut on 750ms pause or every 7s → transcribe → auto-regenerate questions
 - State in localStorage (setup, transcript, pinned, asked). No auth.
 
+## Implemented (2026-06, iteration 5)
+- Wrap-up nudge: when 5 minutes of the target are left, it shows a toast and an amber panel with the minutes left, the prep topics still open and 4 closing questions (written by AI using the 'wrapup' focus). You can pin, refresh or dismiss them. It appears only while listening or right after a new line, and resets if you raise the target. In compact mode a dot appears on the Ask tab.
+- Tested: backend and frontend 100%
+
 ## Implemented (2026-06, iteration 4)
 - Pacing timer: you set a target length in minutes. Time used is compared with topic progress (covered counts 1, touched counts 0.5) to show On pace, Ahead, Behind, Over time or All covered, plus minutes left per open topic. A resumed interview continues from its earlier elapsed time instead of counting the gap.
 - Key facts panel: the brief's key facts and watch outs, kept in the left column on desktop and on the Ask tab in compact mode

@@ -346,7 +346,7 @@ export default function App() {
         onToggleAsked={(id) => setPinned((ps) => ps.map((p) => (p.id === id ? { ...p, asked: !p.asked } : p)))} />
     ),
   };
-  const counts = { coverage: topics.length ? `${topics.filter((t) => t.status === "covered").length}/${topics.length}` : "", pinned: pinned.length || "" };
+  const counts = { coverage: topics.length ? `${topics.filter((t) => t.status === "covered").length}/${topics.length}` : "", pinned: pinned.length || "", wrap: !!(wrap.shown && !wrap.dismissed) };
 
   return (
     <div className="app-root">

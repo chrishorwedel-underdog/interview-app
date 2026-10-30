@@ -1,14 +1,14 @@
 import { Hourglass, Loader2, Pin, RefreshCw, X } from "lucide-react";
 
 export const WrapUpNudge = ({ minutesLeft, openTopics, questions, loading, onRefresh, onDismiss, isPinned, onPin }) => (
-  <section className="panel border-amber-400/50 bg-amber-500/10" data-testid="wrapup-nudge">
-    <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-amber-400/20">
-      <span className="eyebrow flex items-center gap-2 text-amber-200">
+  <section className="panel" style={{ borderColor: "rgba(251, 191, 36, 0.55)", background: "rgba(60, 40, 8, 0.55)" }} data-testid="wrapup-nudge">
+    <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 px-4 py-3 border-b border-amber-400/20">
+      <span className="eyebrow flex items-center gap-2 whitespace-nowrap text-amber-200">
         <Hourglass size={14} className="text-amber-300" /> Time to wrap up
         {loading && <Loader2 size={14} className="animate-spin text-amber-300" data-testid="wrapup-loading" />}
       </span>
       <div className="flex items-center gap-1">
-        <span className="text-base font-semibold text-amber-200 mr-2" data-testid="wrapup-minutes-left">
+        <span className="whitespace-nowrap text-base font-semibold text-amber-200 mr-2" data-testid="wrapup-minutes-left">
           {minutesLeft > 0 ? `${Math.ceil(minutesLeft)} min left` : `${Math.ceil(-minutesLeft)} min over`}
         </span>
         <button onClick={onRefresh} disabled={loading} title="New closing questions" data-testid="wrapup-refresh-button" className="icon-btn"><RefreshCw size={15} /></button>

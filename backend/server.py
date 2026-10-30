@@ -39,7 +39,7 @@ FOCUS = {
     "technical": "Favour precise questions about how things work, numbers, methods and specifics.",
     "challenge": "Favour respectful but pointed questions that test claims, surface tension or counterpoints.",
     "timeline": "Favour questions about sequence: what came before, what happened next, what changes ahead.",
-    "wrapup": "The interview is in its FINAL MINUTES. Suggest graceful closing questions: tie back to the biggest theme discussed, a quick final touch on the most important open prep topic, what's next for the guest, a last word or advice, and where people can follow them. Use TYPE Pivot or Connect or Story.",
+    "wrapup": "The interview is in its FINAL MINUTES. Suggest graceful closing questions: tie back to the biggest theme discussed, a quick final touch on the most important open prep topic (these topics have NOT been discussed yet - never imply the guest already mentioned them), what's next for the guest, a last word or advice, and where people can follow them. Use TYPE Pivot or Connect or Story.",
 }
 
 SYSTEM = """You are a silent co-pilot for a live interviewer. You read the running transcript and suggest the best follow-up questions the HOST could ask next.
