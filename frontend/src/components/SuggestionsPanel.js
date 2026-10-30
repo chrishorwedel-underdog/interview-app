@@ -18,7 +18,7 @@ export const SuggestionsPanel = ({ questions, loading, error, focus, setFocus, o
       </span>
       <div className="flex items-center gap-2">
         <button onClick={() => setAuto(!auto)} data-testid="auto-toggle-button"
-          className={`text-[10px] font-mono uppercase tracking-widest rounded-full border px-2.5 py-1 transition-colors ${auto ? "border-emerald-500/40 text-emerald-400" : "border-white/10 text-slate-400"}`}>
+          className={`text-[0.72rem] font-mono uppercase tracking-widest rounded-full border px-2.5 py-1 transition-colors ${auto ? "border-emerald-500/40 text-emerald-400" : "border-white/10 text-slate-400"}`}>
           Auto {auto ? "on" : "off"}
         </button>
         <button onClick={onRefresh} disabled={!canGenerate} data-testid="generate-now-button"

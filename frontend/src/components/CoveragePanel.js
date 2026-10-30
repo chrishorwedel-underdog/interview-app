@@ -59,7 +59,7 @@ export const CoveragePanel = ({ topics, extracting, checking, hasNotes, onExtrac
             className="field flex-1 rounded-md px-3 py-1.5 text-sm outline-none" />
           <button data-testid="coverage-add-button" className="rounded-md bg-white/10 hover:bg-white/20 px-2.5 transition-colors"><Plus size={14} /></button>
         </form>
-        {topics.length > 0 && <p className="mt-2 text-[11px] font-mono text-slate-400">open · <span className="text-amber-300">touched</span> · <span className="text-emerald-300">covered</span> — click a topic to change it</p>}
+        {topics.length > 0 && <p className="mt-2 text-[0.78rem] font-mono text-slate-400">open · <span className="text-amber-300">touched</span> · <span className="text-emerald-300">covered</span> — click a topic to change it</p>}
       </div>
     </section>
   );

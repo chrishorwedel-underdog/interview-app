@@ -1,4 +1,4 @@
-import { Mic, MonitorSpeaker, Square, Radio, Save, Library, PanelRightClose, PanelRightOpen } from "lucide-react";
+import { Mic, MonitorSpeaker, Square, Radio, Save, Library, PanelRightClose, PanelRightOpen, ALargeSmall } from "lucide-react";
 import { LevelMeter } from "./LevelMeter";
 
 const Source = ({ icon: Icon, label, on, level, color, testId, onClick, compact }) => (
@@ -23,7 +23,7 @@ const Tool = ({ icon: Icon, label, onClick, testId, compact }) => (
   </button>
 );
 
-export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onToggleGuest, elapsed, compact, onToggleCompact, onSave, onLibrary, saving }) => (
+export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onToggleGuest, elapsed, compact, onToggleCompact, onSave, onLibrary, saving, textScale, onCycleText }) => (
   <header className={`flex items-center justify-between ${compact ? "flex-nowrap gap-1 px-2 py-2" : "flex-wrap gap-2 px-4 md:px-6 py-3"} border-b border-white/10 bg-[#090d16]/95 backdrop-blur-xl sticky top-0 z-20`}>
     <div className="flex items-center gap-3">
       {!compact && (
@@ -34,13 +34,14 @@ export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onTog
       {!compact && (
         <div>
           <h1 className="font-display text-lg font-bold tracking-tight leading-none">Follow-Up</h1>
-          <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-slate-300">interview co-pilot</p>
+          <p className="text-[0.72rem] font-mono uppercase tracking-[0.25em] text-slate-300">interview co-pilot</p>
         </div>
       )}
       <div className="flex items-center">
         <Tool icon={Save} label={saving ? "Saving..." : "Save"} onClick={onSave} testId="save-interview-button" compact={compact} />
         <Tool icon={Library} label="Saved" onClick={onLibrary} testId="open-library-button" compact={compact} />
         <Tool icon={compact ? PanelRightOpen : PanelRightClose} label={compact ? "Full layout" : "Side window"} onClick={onToggleCompact} testId="compact-toggle-button" compact={compact} />
+        <Tool icon={ALargeSmall} label={`Text ${({ 1: "L", 1.12: "XL", 0.9: "M" })[textScale] || "L"}`} onClick={onCycleText} testId="text-size-button" compact={compact} />
       </div>
     </div>
     <div className={`flex items-center ${compact ? "gap-1" : "flex-wrap gap-2"}`}>

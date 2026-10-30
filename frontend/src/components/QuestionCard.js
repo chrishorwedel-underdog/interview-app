@@ -19,7 +19,7 @@ export const QuestionCard = ({ q, index, pinned, onPin, onCopy, onUsed, stale })
     data-testid="question-card"
   >
     <div className="flex items-center justify-between mb-2">
-      <span className={`rounded border px-2 py-0.5 text-[10px] font-mono uppercase tracking-widest ${TYPE_COLORS[q.type] || TYPE_COLORS.Deeper}`} data-testid="question-type-badge">{q.type}</span>
+      <span className={`rounded border px-2 py-0.5 text-[0.72rem] font-mono uppercase tracking-widest ${TYPE_COLORS[q.type] || TYPE_COLORS.Deeper}`} data-testid="question-type-badge">{q.type}</span>
       <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
         <button onClick={onUsed} title="I asked this" data-testid="mark-asked-button" className="icon-btn"><Check size={15} /></button>
         <button onClick={onCopy} title="Copy" data-testid="copy-question-button" className="icon-btn"><Copy size={15} /></button>

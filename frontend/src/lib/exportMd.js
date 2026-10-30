@@ -11,6 +11,7 @@ export function interviewToMarkdown(iv) {
     `# ${iv.topic || "Interview"}${iv.guest_name ? ` — ${iv.guest_name}` : ""}`,
     iv.created_at ? `_${new Date(iv.created_at).toLocaleString()}_` : "",
     "",
+    ...(iv.brief ? ["## Prep brief", iv.brief.snapshot, "", "**Openers**", ...iv.brief.openers.map((q) => `- ${q}`), ""] : []),
     "## Shortlisted questions",
     ...(iv.pinned?.length ? iv.pinned.map((p) => `- [${p.asked ? "x" : " "}] ${p.text}`) : ["_None_"]),
     "",

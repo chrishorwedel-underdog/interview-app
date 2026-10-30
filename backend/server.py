@@ -98,6 +98,7 @@ class InterviewIn(BaseModel):
     segments: List[Segment] = []
     pinned: List[PinnedQ] = []
     topics: List[Topic] = []
+    brief: Optional[dict] = None
 
 
 class Interview(BaseDocument, InterviewIn):
@@ -244,6 +245,44 @@ async def topic_coverage(req: CoverageRequest):
         status = new if rank.get(new, 0) > rank.get(t.status, 0) else t.status
         out.append(Topic(id=t.id, label=t.label, status=status).model_dump())
     return {"topics": out}
+
+
+class BriefRequest(BaseModel):
+    guest_name: str = ""
+    topic: str = ""
+    notes: str
+
+
+BRIEF_SYSTEM = """You prepare an interviewer for a call. From their prep notes write a one-page brief.
+Return ONLY JSON with this shape:
+{"snapshot": "2-3 sentence summary of who the guest is and why they matter for this topic",
+ "key_facts": ["5-8 short facts worth remembering, with numbers/dates when present"],
+ "angles": [{"title": "short angle name", "why": "one sentence on why it's interesting / what it could reveal"}],
+ "openers": ["3-5 strong, warm opening questions, speakable, max 25 words"],
+ "deeper": ["4-6 deeper or challenging questions for later in the interview"],
+ "watch_outs": ["2-4 sensitivities, contradictions or things to verify"]}
+Give 3-5 angles. Only use facts from the notes; do not invent."""
+
+
+@api_router.post("/brief")
+async def prep_brief(req: BriefRequest):
+    if not req.notes.strip():
+        raise HTTPException(400, "Add some prep notes first")
+    chat = fast_chat(BRIEF_SYSTEM)
+    text = await chat.send_message(UserMessage(
+        text=f"Guest: {req.guest_name or '(unnamed)'}\nInterview topic: {req.topic or '(not set)'}\n\nPrep notes:\n{req.notes[:60000]}"))
+    data = parse_json(text)
+    if not isinstance(data, dict):
+        raise HTTPException(502, "AI returned malformed data, try again")
+    return {
+        "snapshot": str(data.get("snapshot", "")),
+        "key_facts": [str(x) for x in data.get("key_facts", [])],
+        "angles": [{"title": str(a.get("title", "")), "why": str(a.get("why", ""))} for a in data.get("angles", []) if isinstance(a, dict)],
+        "openers": [str(x) for x in data.get("openers", [])],
+        "deeper": [str(x) for x in data.get("deeper", [])],
+        "watch_outs": [str(x) for x in data.get("watch_outs", [])],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 def oid(interview_id: str) -> ObjectId:

@@ -4,7 +4,7 @@ export const PinnedPanel = ({ pinned, onToggleAsked, onRemove, onCopy, onClear }
   <section className="panel" data-testid="pinned-questions-panel">
     <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
       <span className="eyebrow flex items-center gap-2"><Pin size={13} className="text-amber-400" /> Shortlist <span className="text-slate-500">{pinned.length}</span></span>
-      {pinned.length > 0 && <button onClick={onClear} data-testid="clear-pinned-button" className="text-[10px] font-mono uppercase tracking-widest text-slate-400 hover:text-red-400 transition-colors">Clear</button>}
+      {pinned.length > 0 && <button onClick={onClear} data-testid="clear-pinned-button" className="text-[0.72rem] font-mono uppercase tracking-widest text-slate-400 hover:text-red-400 transition-colors">Clear</button>}
     </div>
     <ul className="p-3 space-y-1.5">
       {pinned.length === 0 && <li className="px-1 py-3 text-sm text-slate-400" data-testid="pinned-empty">Pin a question to keep it handy for later.</li>}

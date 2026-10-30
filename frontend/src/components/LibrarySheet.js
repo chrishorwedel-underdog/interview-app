@@ -39,7 +39,7 @@ const InterviewDetail = ({ iv, onBack, onLoad, onDelete }) => {
           {segs.length === 0 && <p className="text-sm text-slate-400">Empty transcript.</p>}
           {segs.map((s) => (
             <p key={s.id} className="text-sm leading-relaxed text-slate-100">
-              <span className={`font-mono text-[11px] uppercase tracking-widest mr-2 ${s.speaker === "guest" ? "text-emerald-300" : "text-sky-300"}`}>{s.speaker === "guest" ? iv.guest_name || "Guest" : "You"}</span>{s.text}
+              <span className={`font-mono text-[0.78rem] uppercase tracking-widest mr-2 ${s.speaker === "guest" ? "text-emerald-300" : "text-sky-300"}`}>{s.speaker === "guest" ? iv.guest_name || "Guest" : "You"}</span>{s.text}
             </p>
           ))}
         </div>
@@ -88,10 +88,10 @@ export const LibrarySheet = ({ open, onOpenChange, onLoad, onNew, currentId }) =
                   className="w-full text-left rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 hover:border-white/25 hover:bg-white/[0.06] transition-colors">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold text-slate-50 truncate">{it.guest_name || "Untitled guest"}</span>
-                    {it.id === currentId && <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300">current</span>}
+                    {it.id === currentId && <span className="text-[0.72rem] font-mono uppercase tracking-widest text-emerald-300">current</span>}
                   </div>
                   <p className="text-sm text-slate-300 truncate">{it.topic || "No topic"}</p>
-                  <p className="mt-1 text-[11px] font-mono text-slate-400">{when(it.updated_at)} · {it.turns} lines · {it.pinned} pinned</p>
+                  <p className="mt-1 text-[0.78rem] font-mono text-slate-400">{when(it.updated_at)} · {it.turns} lines · {it.pinned} pinned</p>
                 </button>
               ))}
             </div>

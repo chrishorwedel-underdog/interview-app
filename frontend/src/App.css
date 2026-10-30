@@ -10,7 +10,7 @@
 }
 .font-display { font-family: "Bricolage Grotesque", sans-serif; }
 .font-mono, .eyebrow { font-family: "IBM Plex Mono", monospace; }
-.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #dbe4ef; }
+.eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.2em; color: #dbe4ef; }
 .panel {
   background: rgba(17, 25, 44, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -37,3 +37,9 @@
 }
 .icon-btn:hover { color: #f8fafc; background: rgba(255, 255, 255, 0.08); }
 ::selection { background: rgba(16, 185, 129, 0.35); }
+
+@media print {
+  body * { visibility: hidden; }
+  .print-area, .print-area * { visibility: visible; }
+  .print-area { position: absolute !important; inset: 0 !important; transform: none !important; max-height: none !important; overflow: visible !important; background: #fff !important; color: #000 !important; border: none !important; }
+}

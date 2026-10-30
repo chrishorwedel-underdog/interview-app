@@ -19,7 +19,7 @@ const ManualLine = ({ onAdd }) => {
   return (
     <form onSubmit={submit} className="flex gap-2 border-t border-white/10 p-3">
       <button type="button" data-testid="manual-speaker-toggle" onClick={() => setSpeaker(speaker === "guest" ? "host" : "guest")}
-        className={`shrink-0 rounded-md px-2 text-[10px] font-mono uppercase tracking-widest border transition-colors ${speaker === "guest" ? "border-emerald-500/40 text-emerald-400" : "border-sky-500/40 text-sky-400"}`}>
+        className={`shrink-0 rounded-md px-2 text-[0.72rem] font-mono uppercase tracking-widest border transition-colors ${speaker === "guest" ? "border-emerald-500/40 text-emerald-400" : "border-sky-500/40 text-sky-400"}`}>
         {speaker === "guest" ? "Guest" : "You"}
       </button>
       <input data-testid="manual-line-input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Type a line if audio misses something..."
@@ -33,11 +33,11 @@ export const TranscriptFeed = ({ turns, interim, guestName, t0, onAdd, onClear, 
   const ref = useRef(null);
   useEffect(() => { ref.current?.scrollTo({ top: ref.current.scrollHeight, behavior: "smooth" }); }, [turns, interim]);
   return (
-    <section className={`panel flex flex-col min-h-[320px] lg:flex-1 lg:min-h-0 ${compact ? "h-[calc(100vh-130px)]" : ""}`}>
+    <section className={`panel flex flex-col min-h-[320px] lg:flex-1 lg:min-h-0 ${compact ? "h-[calc(100vh-var(--hdr,49px)-5.5rem)]" : ""}`}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         <span className="eyebrow">Live transcript</span>
         <div className="flex items-center gap-3">
-          {guestSpeaking && <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 animate-pulse" data-testid="guest-speaking-indicator">guest speaking</span>}
+          {guestSpeaking && <span className="text-[0.72rem] font-mono uppercase tracking-widest text-emerald-400 animate-pulse" data-testid="guest-speaking-indicator">guest speaking</span>}
           {turns.length > 0 && <button onClick={onClear} data-testid="clear-transcript-button" className="text-slate-400 hover:text-red-400 transition-colors"><Trash2 size={14} /></button>}
         </div>
       </div>
@@ -48,7 +48,7 @@ export const TranscriptFeed = ({ turns, interim, guestName, t0, onAdd, onClear, 
         {turns.map((t) => (
           <motion.div key={t.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} data-testid={`transcript-${t.speaker}-item`}
             className={`border-l-2 pl-3 ${t.speaker === "guest" ? "border-emerald-500" : "border-sky-500/60"}`}>
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-2 text-[0.72rem] font-mono uppercase tracking-widest mb-1">
               <span className={t.speaker === "guest" ? "text-emerald-400" : "text-sky-400"}>{t.speaker === "guest" ? guestName || "Guest" : "You"}</span>
               <span className="text-slate-500">{fmt(t.ts, t0)}</span>
             </div>

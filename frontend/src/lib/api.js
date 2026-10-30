@@ -17,6 +17,7 @@ async function call(method, path, body) {
 
 export const api = {
   extractTopics: (topic, notes) => call("POST", "/topics/extract", { topic, notes }),
+  brief: (guest_name, topic, notes) => call("POST", "/brief", { guest_name, topic, notes }),
   coverage: (topics, transcript) => call("POST", "/topics/coverage", { topics, transcript }),
   listInterviews: () => call("GET", "/interviews"),
   getInterview: (id) => call("GET", `/interviews/${id}`),

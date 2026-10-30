@@ -9,6 +9,8 @@ import { PinnedPanel } from "@/components/PinnedPanel";
 import { CoveragePanel } from "@/components/CoveragePanel";
 import { LibrarySheet } from "@/components/LibrarySheet";
 import { CompactLayout } from "@/components/CompactLayout";
+import { TalkMeter } from "@/components/TalkMeter";
+import { BriefDialog } from "@/components/BriefDialog";
 import { useHostSpeech } from "@/hooks/useHostSpeech";
 import { useGuestAudio } from "@/hooks/useGuestAudio";
 import { useLocalState } from "@/hooks/useLocalState";
@@ -16,6 +18,7 @@ import { transcribeBlob, streamSuggestions, parseQuestions, api } from "@/lib/ap
 
 const RANK = { open: 0, touched: 1, covered: 2 };
 const NEXT = { open: "touched", touched: "covered", covered: "open" };
+const SCALES = [1, 1.12, 0.9];
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 const MERGE_GAP_MS = 12000;
@@ -55,6 +58,17 @@ export default function App() {
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [extracting, setExtracting] = useState(false);
+  const [brief, setBrief] = useLocalState("fu-brief", null);
+  const [briefOpen, setBriefOpen] = useState(false);
+  const [briefLoading, setBriefLoading] = useState(false);
+  const [textScale, setTextScale] = useLocalState("fu-text-scale", 1);
+  useEffect(() => { document.documentElement.style.fontSize = `${18 * textScale}px`; }, [textScale]);
+  useEffect(() => {
+    const header = document.querySelector("header");
+    const ro = new ResizeObserver(() => document.documentElement.style.setProperty("--hdr", `${header.offsetHeight}px`));
+    ro.observe(header);
+    return () => ro.disconnect();
+  }, []);
   const [checking, setChecking] = useState(false);
   const covRef = useRef({ busy: false, last: 0, timer: null });
   const [focus, setFocus] = useState("balanced");
@@ -68,7 +82,7 @@ export default function App() {
 
   const turns = useMemo(() => mergeTurns(segments), [segments]);
   const ctxRef = useRef({});
-  ctxRef.current = { setup, turns, focus, asked, topics, segments, pinned, interviewId };
+  ctxRef.current = { setup, turns, focus, asked, topics, segments, pinned, interviewId, brief };
 
   const addSegment = useCallback((speaker, text, ts = Date.now()) => {
     if (!text) return;
@@ -149,9 +163,20 @@ export default function App() {
   const addTopic = (label) => setTopics((ts) => [...ts, { id: uid(), label, status: "open" }]);
   const removeTopic = (id) => setTopics((ts) => ts.filter((t) => t.id !== id));
 
+  const generateBrief = async () => {
+    setBriefLoading(true);
+    try {
+      setBrief(await api.brief(setup.guest_name, setup.topic, setup.notes));
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setBriefLoading(false);
+    }
+  };
+
   const saveInterview = async (quiet) => {
-    const { setup: su, segments: sg, pinned: pn, topics: tp, interviewId: id } = ctxRef.current;
-    const body = { ...su, segments: sg, pinned: pn, topics: tp };
+    const { setup: su, segments: sg, pinned: pn, topics: tp, interviewId: id, brief: br } = ctxRef.current;
+    const body = { ...su, segments: sg, pinned: pn, topics: tp, brief: br };
     setSaving(true);
     try {
       let res;
@@ -176,6 +201,7 @@ export default function App() {
     setSegments(data.segments || []);
     setPinned(data.pinned || []);
     setTopics(data.topics || []);
+    setBrief(data.brief || null);
     setInterviewId(data.id || null);
     setAsked([]);
     setQuestions([]);
@@ -249,7 +275,8 @@ export default function App() {
   };
 
   const panels = {
-    setup: <SetupPanel setup={setup} setSetup={setSetup} />,
+    setup: <SetupPanel setup={setup} setSetup={setSetup} hasBrief={!!brief} onOpenBrief={() => setBriefOpen(true)} />,
+    talk: <TalkMeter segments={segments} />,
     transcript: (
       <TranscriptFeed turns={turns} interim={host.interim} guestName={setup.guest_name} t0={t0}
         onAdd={(sp, text) => addSegment(sp, text)} onClear={clearTranscript} guestSpeaking={guest.speaking} compact={compact} />
@@ -279,12 +306,16 @@ export default function App() {
         onToggleHost={() => (host.active ? host.stop() : startHost())}
         onToggleGuest={() => (guest.active ? guest.stop() : startGuest())}
         compact={compact} onToggleCompact={() => setCompact(!compact)} saving={saving}
+        textScale={textScale} onCycleText={() => setTextScale(SCALES[(SCALES.indexOf(textScale) + 1) % SCALES.length] ?? 1)}
         onSave={() => saveInterview(false)} onLibrary={() => setLibraryOpen(true)} />
       <LibrarySheet open={libraryOpen} onOpenChange={setLibraryOpen} onLoad={loadInterview} onNew={newInterview} currentId={interviewId} />
+      <BriefDialog open={briefOpen} onOpenChange={setBriefOpen} brief={brief} loading={briefLoading} onGenerate={generateBrief}
+        setup={setup} isPinned={isPinned} onPin={(q) => togglePin({ text: q })} />
       {compact ? <CompactLayout panels={panels} counts={counts} /> : (
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 md:p-6">
-          <div className="lg:col-span-5 flex flex-col gap-4 lg:h-[calc(100vh-110px)] lg:sticky lg:top-[86px]">
+          <div className="lg:col-span-5 flex flex-col gap-4 lg:h-[calc(100vh-var(--hdr,70px)-2rem)] lg:sticky lg:top-[calc(var(--hdr,70px)+1rem)]">
             {panels.setup}
+            {panels.talk}
             {panels.transcript}
           </div>
           <div className="lg:col-span-7 flex flex-col gap-4">
