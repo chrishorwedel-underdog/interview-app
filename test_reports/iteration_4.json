@@ -1,0 +1,35 @@
+{
+  "summary": "Iteration 4, frontend only. Tested the Pacing panel, the Brief glance panel, the layout, white text, and regression. Pacing: all 7 statuses were seeded through localStorage and each matched the spec, along with bar widths and hint text: none, idle, done, over ('5 min over · 2 topics still open'), behind (67% time vs 25% topics), ahead and on (50/50). Target defaults to 45, is saved in fu-target-min and survives a reload. 999 clamps to 300 and 0 clamps to 1. One input bug: clearing the field and typing 30 gives 130. Brief glance: hidden with no brief. Shows key facts and watch-outs, the toggle collapses and expands it, and brief-glance-open opens brief-dialog. It also appears after generating a brief from the real API with 6 items, is cleared by New interview, and comes back after loading from the library. Desktop 1920x800: talk meter and pacing sit side by side above the transcript; glance sits above coverage, next to the shortlist. Compact 420px: Ask tab shows talk-meter, suggestions, brief-glance, pinned; Topics tab shows pacing, coverage. No horizontal scroll at L, XL or M. A computed-color scan found only one non-white text: the active focus chip, dark on white, which is fine. Regression passed: a manual guest line produced 4 suggestions, the text size cycles 18 -> 20.16 -> 18px, save, new and load from the library all work, and the brief generates.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "PacingPanel target input", "issue": "onChange clamps empty input to 1 immediately, so Ctrl+A/Backspace then typing '30' produces 130 (clamped from '130'). The user cannot clear the field and retype. Also, the HTML min=5/step=5 disagree with the JS clamp of 1. Keep a local string state and clamp on blur, or allow '' while editing.", "selector": "[data-testid='pacing-target-input']", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Desktop 1920x800", "issues": [
+        "Brief glance is rendered below the suggestions panel. Once 4 suggestions load, it is pushed below the fold and needs scrolling, which works against 'glance during the call'. Consider putting it in the sticky left column or making the right column's top region sticky.",
+        "With prep notes expanded, the transcript and no talk meter, the live transcript panel shrinks to about 40px and its empty-state text is clipped. Pacing adds height to the fixed left column, so this is worse than in iteration 3.",
+        "When the talk meter is hidden (no transcript), pacing takes only half the row width (xl:grid-cols-2), leaving an empty gap."
+      ]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Fix pacing-target-input editing: allow an empty or partial value while typing, clamp 1-300 on blur, and align the min/step attributes.",
+    "Make brief-glance visible without scrolling on desktop (e.g. move it to the left column, or make it sticky).",
+    "Auto-collapse prep notes, or let the left column scroll, so the transcript isn't crushed at 800px height."
+  ],
+  "critical_code_review_comments": [
+    "While listening, useElapsed uses now - t0, where t0 is the first segment's ts. If a saved or loaded interview is resumed later, elapsed includes the whole gap, so pacing jumps straight to 'over'.",
+    "Pacing with topics == [] shows 'none' even after the brief is generated. Topics are only extracted on Start or Re-read, which is fine but could be surfaced.",
+    "Some slate classes remain (border-slate-*, bg-slate-100 text-slate-900 on the active chip). These are not text-readability issues.",
+    "No file is over 700 lines. data-testids are present."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "95%"},
+  "seed_data_creation": "Interview TEST_Iter4 Guest was created via the UI and then deleted via the API.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Seed pacing via localStorage fu-segments (elapsed = last ts - first ts when not live), fu-topics and fu-target-min, with fu-compact='false' for desktop. Brief glance is seeded via fu-brief. Accept confirm dialogs (import asyncio in the playwright script)."
+}

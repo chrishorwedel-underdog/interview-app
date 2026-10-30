@@ -40,13 +40,15 @@ function mergeTurns(segments) {
 
 function useElapsed(t0, live, lastTs) {
   const [now, setNow] = useState(Date.now());
+  const run = useRef({ base: 0, start: 0 });
   useEffect(() => {
     if (!live) return;
+    run.current = { base: lastTs ? Math.max(0, lastTs - t0) : 0, start: Date.now() };
     setNow(Date.now());
     const i = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(i);
-  }, [live]);
-  const ms = Math.max(0, (live ? now : lastTs || t0) - t0);
+  }, [live]); // eslint-disable-line react-hooks/exhaustive-deps
+  const ms = live ? run.current.base + Math.max(0, now - run.current.start) : Math.max(0, (lastTs || t0) - t0);
   const s = Math.floor(ms / 1000);
   return { ms, label: `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` };
 }
@@ -320,19 +322,17 @@ export default function App() {
         setup={setup} isPinned={isPinned} onPin={(q) => togglePin({ text: q })} />
       {compact ? <CompactLayout panels={panels} counts={counts} /> : (
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 md:p-6">
-          <div className="lg:col-span-5 flex flex-col gap-4 lg:h-[calc(100vh-var(--hdr,70px)-2rem)] lg:sticky lg:top-[calc(var(--hdr,70px)+1rem)]">
+          <div className="lg:col-span-5 flex flex-col gap-4 lg:h-[calc(100vh-var(--hdr,70px)-2rem)] lg:sticky lg:top-[calc(var(--hdr,70px)+1rem)] lg:overflow-y-auto">
             {panels.setup}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
-              {panels.talk}
-              {panels.pacing}
-            </div>
+            {panels.glance}
             {panels.transcript}
           </div>
           <div className="lg:col-span-7 flex flex-col gap-4">
             {panels.suggestions}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
               <div className="flex flex-col gap-4">
-                {panels.glance}
+                {panels.talk}
+                {panels.pacing}
                 {panels.coverage}
               </div>
               {panels.pinned}

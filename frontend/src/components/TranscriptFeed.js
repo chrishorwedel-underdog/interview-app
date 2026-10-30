@@ -33,7 +33,7 @@ export const TranscriptFeed = ({ turns, interim, guestName, t0, onAdd, onClear, 
   const ref = useRef(null);
   useEffect(() => { ref.current?.scrollTo({ top: ref.current.scrollHeight, behavior: "smooth" }); }, [turns, interim]);
   return (
-    <section className={`panel flex flex-col min-h-[320px] lg:flex-1 lg:min-h-0 ${compact ? "h-[calc(100vh-var(--hdr,49px)-5.5rem)]" : ""}`}>
+    <section className={`panel flex flex-col min-h-[320px] lg:flex-1 lg:min-h-[18rem] ${compact ? "h-[calc(100vh-var(--hdr,49px)-5.5rem)]" : ""}`}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         <span className="eyebrow">Live transcript</span>
         <div className="flex items-center gap-3">

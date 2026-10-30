@@ -14,7 +14,7 @@ export const BriefGlance = ({ brief, onOpen }) => {
         <button onClick={onOpen} data-testid="brief-glance-open" title="Open full brief" className="icon-btn"><Maximize2 size={14} /></button>
       </div>
       {open && (
-        <ul className="px-4 py-3 space-y-1.5 max-h-72 overflow-y-auto" data-testid="brief-glance-facts">
+        <ul className="px-4 py-3 space-y-1.5 max-h-56 overflow-y-auto" data-testid="brief-glance-facts">
           {brief.key_facts.map((f, i) => (
             <li key={i} className="flex gap-2 text-base leading-snug text-white">
               <span className="text-emerald-400">•</span><span>{f}</span>

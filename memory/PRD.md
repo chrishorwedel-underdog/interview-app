@@ -14,6 +14,12 @@ Web app open during an interview that listens to the host's questions and the gu
 - Frontend React: host mic via browser Web Speech API (free, Chrome/Edge); guest audio via shared tab (getDisplayMedia) + voice-activity detection → chunks cut on 750ms pause or every 7s → transcribe → auto-regenerate questions
 - State in localStorage (setup, transcript, pinned, asked). No auth.
 
+## Implemented (2026-06, iteration 4)
+- Pacing timer: you set a target length in minutes. Time used is compared with topic progress (covered counts 1, touched counts 0.5) to show On pace, Ahead, Behind, Over time or All covered, plus minutes left per open topic. A resumed interview continues from its earlier elapsed time instead of counting the gap.
+- Key facts panel: the brief's key facts and watch outs, kept in the left column on desktop and on the Ask tab in compact mode
+- All UI text is now white. The left column scrolls so the transcript is never squeezed.
+- Tested: frontend 95%, then fixed the target-input editing and the panel placement
+
 ## Implemented (2026-06, iteration 3)
 - Prep brief (/api/brief): a one-page brief with a snapshot, key facts, angles, openers, deeper questions and watch outs. You can pin any question from it, print it or save it as PDF, and it is stored with the saved interview and included in the export.
 - Talk time meter: your share of words versus the guest's, overall and for the last 5 minutes, with a warning when you pass 40%

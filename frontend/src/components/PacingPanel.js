@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Timer } from "lucide-react";
 
 const STATUS = {
@@ -39,6 +40,13 @@ const Row = ({ label, frac, color, value, testId }) => (
 );
 
 export const PacingPanel = ({ elapsedMs, targetMin, setTargetMin, topics }) => {
+  const [draft, setDraft] = useState(String(targetMin));
+  useEffect(() => setDraft(String(targetMin)), [targetMin]);
+  const commit = () => {
+    const n = Math.min(300, Math.max(1, Math.round(Number(draft)) || targetMin));
+    setTargetMin(n);
+    setDraft(String(n));
+  };
   const elapsedMin = elapsedMs / 60000;
   const p = pace(elapsedMin, targetMin, topics);
   const [color, text] = STATUS[p.status];
@@ -48,8 +56,9 @@ export const PacingPanel = ({ elapsedMs, targetMin, setTargetMin, topics }) => {
         <span className="eyebrow flex items-center gap-2"><Timer size={14} /> Pacing</span>
         <label className="flex items-center gap-1.5 text-sm text-white">
           Target
-          <input type="number" min={5} max={300} step={5} value={targetMin} data-testid="pacing-target-input"
-            onChange={(e) => setTargetMin(Math.min(300, Math.max(1, Number(e.target.value) || 1)))}
+          <input type="number" min={1} max={300} step={5} value={draft} data-testid="pacing-target-input"
+            onChange={(e) => setDraft(e.target.value)} onBlur={commit}
+            onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
             className="field w-16 rounded-md px-2 py-0.5 text-sm text-center outline-none" />
           min
         </label>
