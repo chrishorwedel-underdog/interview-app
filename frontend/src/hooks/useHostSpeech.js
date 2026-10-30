@@ -31,7 +31,11 @@ export function useHostSpeech(onFinal) {
       } else setActive(false);
     };
     rec.onerror = (e) => {
-      if (e.error === "not-allowed") { wantRef.current = false; setActive(false); }
+      if (e.error === "not-allowed" || e.error === "audio-capture") {
+        wantRef.current = false;
+        setActive(false);
+        window.dispatchEvent(new CustomEvent("host-mic-error", { detail: "Microphone blocked or missing. Allow mic access for this site." }));
+      }
     };
     wantRef.current = true;
     recRef.current = rec;

@@ -99,9 +99,16 @@ export default function App() {
       const text = await transcribeBlob(blob, `${ctxRef.current.setup.topic}. ${recent}`);
       addSegment("guest", text, startedAt);
     } catch (e) {
-      toast.error(e.message);
+      if (Date.now() - lastErrRef.current > 15000) toast.error("A bit of guest audio couldn't be transcribed");
+      lastErrRef.current = Date.now();
     }
   });
+  const lastErrRef = useRef(0);
+  useEffect(() => {
+    const h = (e) => toast.error(e.detail);
+    window.addEventListener("host-mic-error", h);
+    return () => window.removeEventListener("host-mic-error", h);
+  }, []);
 
   const live = host.active || guest.active;
   const elapsed = useElapsed(t0, live);

@@ -40,7 +40,7 @@ export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onTog
         </button>
       ) : (
         <button onClick={onStart} data-testid="start-listening-button" className="flex items-center gap-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#04110b] px-4 py-2 text-sm font-semibold transition-colors">
-          <Mic size={14} /> Start listening
+          <Mic size={14} /> <span className="hidden sm:inline">Start listening</span><span className="sm:hidden">Start</span>
         </button>
       )}
     </div>

@@ -1,0 +1,34 @@
+{
+  "summary": "Iteration 1: full backend + frontend test of the Follow-Up interview co-pilot. Backend 13/13 pytest pass (/api/suggest SSE streams 'TYPE | question' lines and ends with [DONE], all focus values plus an invalid one, empty transcript gives 400, missing transcript gives 422; /api/transcribe with a gTTS mp3 transcribed correctly, tiny file returns empty text, garbage over 3KB gives 502, missing file gives 422). Frontend: all requested flows passed. First streamed question card shows in about 1.4s and the full set is done in about 1.6s.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/transcribe", "issue": "A single bad audio chunk returns 502, and the frontend shows toast.error for each failed chunk. During a live interview one bad chunk could flash an error toast. Consider failing quietly for each chunk, or slowing down repeat toasts."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Mobile 390px", "issues": ["The Stop / Start listening button wraps onto its own line under the source toggles in the header. It works, but the header is tall (about 140px) and sticky, so it takes vertical space."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_interview_copilot.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: in useHostSpeech, surface rec.onerror errors other than not-allowed (network, audio-capture, no-speech loops) and show a toast when mic permission is denied. Right now host transcription can fail silently: in headless Chrome the 'You' source stayed off with no message.",
+    "Optional: limit repeated transcription error toasts during live capture."
+  ],
+  "critical_code_review_comments": [
+    "mergeTurns merges consecutive same-speaker segments less than 12s apart, so two guest lines typed quickly show as one transcript-guest-item. This is intended, but tests and users should expect it.",
+    "useGuestAudio hardcodes mimeType 'audio/webm;codecs=opus', so it throws on Safari. Check MediaRecorder.isTypeSupported and fall back.",
+    "togglePin and other handlers use the pinned array from the closure instead of functional setState. This is fine for clicks but could lose updates on rapid toggles.",
+    "Focus outputs are fairly similar between focuses (many 'month nine' questions). The prompt could weight focus more strongly. This is a quality note, not a bug.",
+    "No files over 700 lines. The API URL comes from env. data-testids are present on all interactive elements."
+  ],
+  "updated_files": ["/app/backend/tests/test_interview_copilot.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None (all state is in localStorage)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "No auth. Each browser_automation run gets fresh localStorage, so seed a guest line through manual-line-input first. generate-now-button is disabled when the transcript is empty. Clear-transcript uses window.confirm: import asyncio and use page.once('dialog', lambda d: asyncio.ensure_future(d.accept())). In headless Chromium, Start listening works with fake media (guest goes active, Stop button appears). Run backend tests with REACT_APP_BACKEND_URL exported. gTTS is installed."
+}

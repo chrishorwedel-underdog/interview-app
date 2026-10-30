@@ -18,7 +18,8 @@ export function useGuestAudio(onSegment) {
     const s = st.current;
     const chunks = [];
     const startedAt = Date.now();
-    const rec = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
+    const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : undefined;
+    const rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
     rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     rec.onstop = () => {
       if (rec._send) cbRef.current(new Blob(chunks, { type: "audio/webm" }), startedAt);
