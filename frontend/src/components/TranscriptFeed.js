@@ -29,11 +29,11 @@ const ManualLine = ({ onAdd }) => {
   );
 };
 
-export const TranscriptFeed = ({ turns, interim, guestName, t0, onAdd, onClear, guestSpeaking }) => {
+export const TranscriptFeed = ({ turns, interim, guestName, t0, onAdd, onClear, guestSpeaking, compact }) => {
   const ref = useRef(null);
   useEffect(() => { ref.current?.scrollTo({ top: ref.current.scrollHeight, behavior: "smooth" }); }, [turns, interim]);
   return (
-    <section className="panel flex flex-col min-h-[320px] lg:flex-1 lg:min-h-0">
+    <section className={`panel flex flex-col min-h-[320px] lg:flex-1 lg:min-h-0 ${compact ? "h-[calc(100vh-130px)]" : ""}`}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         <span className="eyebrow">Live transcript</span>
         <div className="flex items-center gap-3">
@@ -41,7 +41,7 @@ export const TranscriptFeed = ({ turns, interim, guestName, t0, onAdd, onClear, 
           {turns.length > 0 && <button onClick={onClear} data-testid="clear-transcript-button" className="text-slate-400 hover:text-red-400 transition-colors"><Trash2 size={14} /></button>}
         </div>
       </div>
-      <div ref={ref} className="flex-1 overflow-y-auto px-4 py-3 space-y-4 max-h-[50vh] lg:max-h-none" data-testid="live-transcript-container">
+      <div ref={ref} className={`flex-1 overflow-y-auto px-4 py-3 space-y-4 ${compact ? "" : "max-h-[50vh]"} lg:max-h-none`} data-testid="live-transcript-container">
         {turns.length === 0 && !interim && (
           <p className="text-sm text-slate-400 leading-relaxed pt-6" data-testid="transcript-empty">Press <b className="text-slate-300">Start listening</b>, allow your mic, then pick your video call's tab and turn on <b className="text-slate-300">Share tab audio</b>. What you and your guest say will appear here.</p>
         )}

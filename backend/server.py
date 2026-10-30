@@ -143,7 +143,7 @@ def build_prompt(req: SuggestRequest) -> str:
         f"INTERVIEW TOPIC: {req.topic or '(not set)'}\nGUEST: {guest}\n\n"
         f"BACKGROUND NOTES:\n{req.notes or '(none)'}\n\n"
         f"QUESTIONS ALREADY ASKED / USED:\n{asked}\n\n"
-        f"PREP TOPICS NOT YET COVERED (use for Pivot/Connect when natural): {', '.join(req.open_topics) or '(none)'}\n\n"
+        f"PREP TOPICS NOT YET COVERED (for Pivot/Connect, frame as new ground the guest has not mentioned yet): {', '.join(req.open_topics) or '(none)'}\n\n"
         f"FOCUS: {FOCUS.get(req.focus, FOCUS['balanced'])}\n\n"
         f"TRANSCRIPT SO FAR (most recent last):\n" + "\n".join(lines) +
         "\n\nGive the 4 best follow-up questions now."
@@ -207,7 +207,10 @@ def parse_json(text: str):
     m = re.search(r"[\[{].*[\]}]", text, re.S)
     if not m:
         raise HTTPException(502, "AI returned no data")
-    return json.loads(m.group(0))
+    try:
+        return json.loads(m.group(0))
+    except json.JSONDecodeError:
+        raise HTTPException(502, "AI returned malformed data, try again")
 
 
 @api_router.post("/topics/extract")
@@ -217,7 +220,10 @@ async def extract_topics(req: ExtractRequest):
     chat = fast_chat("You turn an interviewer's prep notes into a checklist of distinct subjects to cover. "
                      "Return ONLY a JSON array of 5-12 short labels (2-6 words each), in a sensible interview order.")
     text = await chat.send_message(UserMessage(text=f"Interview topic: {req.topic}\n\nPrep notes:\n{req.notes[:60000]}"))
-    labels = [str(x).strip() for x in parse_json(text) if str(x).strip()][:15]
+    data = parse_json(text)
+    if not isinstance(data, list):
+        raise HTTPException(502, "AI returned malformed data, try again")
+    labels = [str(x).strip() for x in data if str(x).strip()][:15]
     return {"topics": [Topic(id=uuid.uuid4().hex[:8], label=label).model_dump() for label in labels]}
 
 

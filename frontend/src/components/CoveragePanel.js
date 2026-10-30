@@ -50,7 +50,7 @@ export const CoveragePanel = ({ topics, extracting, checking, hasNotes, onExtrac
                 {t.status === "touched" && <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />}
                 <span className={t.status === "covered" ? "line-through decoration-emerald-400/50" : ""}>{t.label}</span>
               </button>
-              <button onClick={() => onRemove(t.id)} data-testid="coverage-topic-remove" className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-white transition-opacity"><X size={12} /></button>
+              <button onClick={() => onRemove(t.id)} data-testid="coverage-topic-remove" className="opacity-50 group-hover:opacity-100 focus:opacity-100 text-slate-300 hover:text-white transition-opacity"><X size={12} /></button>
             </li>
           ))}
         </ul>

@@ -186,6 +186,7 @@ export default function App() {
     resetWorkspace(iv);
     setLibraryOpen(false);
     toast.success("Interview opened");
+    if (iv.segments?.length) setTimeout(generate, 0);
   };
   const newInterview = () => {
     if (live) return toast.error("Stop listening first");
@@ -251,7 +252,7 @@ export default function App() {
     setup: <SetupPanel setup={setup} setSetup={setSetup} />,
     transcript: (
       <TranscriptFeed turns={turns} interim={host.interim} guestName={setup.guest_name} t0={t0}
-        onAdd={(sp, text) => addSegment(sp, text)} onClear={clearTranscript} guestSpeaking={guest.speaking} />
+        onAdd={(sp, text) => addSegment(sp, text)} onClear={clearTranscript} guestSpeaking={guest.speaking} compact={compact} />
     ),
     suggestions: (
       <SuggestionsPanel questions={questions} loading={loading} error={error} focus={focus}

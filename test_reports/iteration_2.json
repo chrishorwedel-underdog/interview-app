@@ -1,0 +1,37 @@
+{
+  "summary": "Iteration 2: tested the Coverage Tracker, Saved Interviews library, Side Window (compact) mode, contrast, and regression. Backend: 24/24 pytest pass (11 new in test_iter2_coverage_library.py plus 13 from iteration 1). Topic extract returns 5-12 open topics, empty notes give 400. Coverage returns open/touched/covered and never downgrades a status passed in. The interviews CRUD works: list is sorted by updated_at desc with turns/pinned counts, responses use 'id' not '_id', and bad or unknown ids give 404. /api/suggest accepts open_topics. Frontend: all requested flows passed. Extract filled 7 chips. The toggle cycles open->touched->covered->open, and the count updates. Add and remove topic work. A guest line made coverage update automatically in about 8s, including the trailing re-check when a second line was added inside the 15s throttle window. Save shows the 'Interview saved' toast, and saving again sends a PUT to the same id. The library lists items and marks the current one. Detail shows the transcript and shortlist. Export downloads a .md file with the shortlist, coverage and transcript. New clears the workspace. Load restores setup, transcript, pinned and topics, and saving after load sends a PUT with no duplicate. Delete removes the item. Compact mode at 420px: header is one row (53px) with no horizontal scroll. All 5 tabs show the right panel, and tab counts show (Topics 1/2, Pins 1). The setting persists after reload, and toggling back restores the full grid. Regression passed: auto-questions on a guest line, pin, mark asked, pinned asked toggle, and focus filter re-generation. Contrast is good: light text on dark panels, readable.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/topics/extract, /api/topics/coverage", "issue": "parse_json uses json.loads without catching JSONDecodeError, so malformed LLM JSON gives an unhandled 500 instead of 502. Also, if extract gets a JSON object instead of an array, it silently iterates the dict keys."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Library detail", "issues": ["The Coverage line shows '○' for both 'touched' and 'open'. Only 'covered' gets a ✓, so touched topics look identical to open ones (the export .md correctly says 'touched')."]},
+      {"screen": "Coverage panel", "issues": ["The coverage-topic-remove X is opacity-0 until hover, so it is invisible on touch devices and when navigating by keyboard focus."]},
+      {"screen": "Compact layout, Live tab", "issues": ["The transcript panel is short (about 320px) with a large empty area below it at 900px height. Consider letting the transcript fill the available viewport height in compact mode."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iter2_coverage_library.py", "/app/backend/tests/test_interview_copilot.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: wrap json.loads in parse_json with try/except, raise 502, and check that extract gets a list.",
+    "Optional: in the library detail coverage, use a distinct marker for 'touched' (e.g. ◐).",
+    "Optional: make the topic remove button visible on focus/touch (e.g. group-focus-within:opacity-100 or always faintly visible)."
+  ],
+  "critical_code_review_comments": [
+    "LibrarySheet.remove has no try/catch around api.deleteInterview, so a failure gives an unhandled rejection and no toast.",
+    "After loading an interview, the Ask panel is empty until the next guest line or a 'Generate now' click. Consider auto-generating on load if the transcript is not empty.",
+    "Deleting the interview currently open in the workspace leaves interviewId set. The next save falls back from PUT 404 to POST correctly (handled).",
+    "The open_topics prompt leads the LLM to sometimes phrase questions as if the guest already mentioned an open topic (e.g. 'lessons from your early battery startup' before the guest said it). This is a quality note.",
+    "No files over 700 lines. data-testids are present. API URL comes from env. _id is not leaked."
+  ],
+  "updated_files": ["/app/backend/tests/test_iter2_coverage_library.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None persisted. TEST_ interviews were created and deleted during the tests.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "No auth. Correct testids: pinned-question-item, focus-{k}-button (e.g. focus-stories-button), setup-guest-name-input, setup-topic-input, manual-speaker-toggle. Accept confirms with page.on('dialog', lambda d: asyncio.ensure_future(d.accept())). Coverage auto-update takes about 5-8s after a guest line. Compact mode defaults on when innerWidth < 900 on first load (localStorage fu-compact). Run backend tests with REACT_APP_BACKEND_URL exported."
+}

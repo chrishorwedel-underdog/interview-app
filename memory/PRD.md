@@ -14,6 +14,13 @@ Web app open during an interview that listens to the host's questions and the gu
 - Frontend React: host mic via browser Web Speech API (free, Chrome/Edge); guest audio via shared tab (getDisplayMedia) + voice-activity detection → chunks cut on 750ms pause or every 7s → transcribe → auto-regenerate questions
 - State in localStorage (setup, transcript, pinned, asked). No auth.
 
+## Implemented (2026-06, iteration 2)
+- Coverage tracker: AI pulls a topic checklist from your prep notes. Topics are marked open, touched or covered automatically as the guest talks (checked at most every 15s), and you can click to change them. Open topics steer the Pivot/Connect questions.
+- Saved interviews (MongoDB): Save button, auto-save on Stop, a list of saved interviews with detail, open in workspace, Markdown export, delete and new interview
+- Side window mode: a compact tabbed layout (Ask/Live/Topics/Pins/Prep) with a one-row header. The setting is remembered and turns on by default below 900px.
+- Higher-contrast text, panels and fields
+- Tested: backend 24/24, frontend all flows pass
+
 ## Implemented (2026-06)
 - Setup panel (guest, topic, notes), live 2-speaker transcript, manual line input
 - Auto/manual follow-up generation, 4 typed questions, focus filters

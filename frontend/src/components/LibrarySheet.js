@@ -30,7 +30,7 @@ const InterviewDetail = ({ iv, onBack, onLoad, onDelete }) => {
       {iv.topics.length > 0 && (
         <div>
           <p className="eyebrow mb-2">Coverage</p>
-          <p className="text-sm text-slate-200">{iv.topics.map((t) => `${t.status === "covered" ? "✓" : "○"} ${t.label}`).join("   ")}</p>
+          <p className="text-sm text-slate-200">{iv.topics.map((t) => `${{ covered: "✓", touched: "◐", open: "○" }[t.status]} ${t.label}`).join("   ")}</p>
         </div>
       )}
       <div>
@@ -61,7 +61,11 @@ export const LibrarySheet = ({ open, onOpenChange, onLoad, onNew, currentId }) =
   const openItem = (id) => api.getInterview(id).then(setDetail).catch((e) => toast.error(e.message));
   const remove = async (id) => {
     if (!window.confirm("Delete this saved interview permanently?")) return;
-    await api.deleteInterview(id);
+    try {
+      await api.deleteInterview(id);
+    } catch (e) {
+      return toast.error(e.message);
+    }
     setItems((xs) => xs.filter((x) => x.id !== id));
     setDetail(null);
     toast.success("Interview deleted");
