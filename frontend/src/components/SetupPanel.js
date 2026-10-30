@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, NotebookPen, FileText } from "lucide-react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
-export const SetupPanel = ({ setup, setSetup, onOpenBrief, hasBrief }) => {
+export const SetupPanel = ({ setup, setSetup, onOpenBrief, hasBrief, hasTranscript }) => {
   const [open, setOpen] = useState(!setup.notes && !setup.topic);
+  useEffect(() => { if (hasTranscript) setOpen(false); }, [hasTranscript]);
   const set = (k) => (e) => setSetup({ ...setup, [k]: e.target.value });
   return (
     <section className="panel" data-testid="setup-panel">

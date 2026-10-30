@@ -275,7 +275,7 @@ export default function App() {
   };
 
   const panels = {
-    setup: <SetupPanel setup={setup} setSetup={setSetup} hasBrief={!!brief} onOpenBrief={() => setBriefOpen(true)} />,
+    setup: <SetupPanel setup={setup} setSetup={setSetup} hasBrief={!!brief} hasTranscript={segments.length > 0} onOpenBrief={() => setBriefOpen(true)} />,
     talk: <TalkMeter segments={segments} />,
     transcript: (
       <TranscriptFeed turns={turns} interim={host.interim} guestName={setup.guest_name} t0={t0}

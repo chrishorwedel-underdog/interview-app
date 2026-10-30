@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
 
+body, .app-root { font-family: "Figtree", sans-serif; }
 .app-root {
   min-height: 100vh;
   background: #090d16;

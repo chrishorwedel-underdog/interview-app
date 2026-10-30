@@ -3,6 +3,19 @@ const stamp = (ts, t0) => {
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 };
 
+const list = (title, items) => (items?.length ? [`**${title}**`, ...items.map((x) => `- ${x}`), ""] : []);
+
+const briefMd = (b) => [
+  "## Prep brief",
+  b.snapshot,
+  "",
+  ...list("Key facts", b.key_facts),
+  ...list("Likely angles", (b.angles || []).map((a) => `${a.title}: ${a.why}`)),
+  ...list("Opening questions", b.openers),
+  ...list("Go deeper later", b.deeper),
+  ...list("Watch outs", b.watch_outs),
+];
+
 export function interviewToMarkdown(iv) {
   const guest = iv.guest_name || "Guest";
   const segs = [...(iv.segments || [])].sort((a, b) => a.ts - b.ts);
@@ -11,7 +24,7 @@ export function interviewToMarkdown(iv) {
     `# ${iv.topic || "Interview"}${iv.guest_name ? ` — ${iv.guest_name}` : ""}`,
     iv.created_at ? `_${new Date(iv.created_at).toLocaleString()}_` : "",
     "",
-    ...(iv.brief ? ["## Prep brief", iv.brief.snapshot, "", "**Openers**", ...iv.brief.openers.map((q) => `- ${q}`), ""] : []),
+    ...(iv.brief ? briefMd(iv.brief) : []),
     "## Shortlisted questions",
     ...(iv.pinned?.length ? iv.pinned.map((p) => `- [${p.asked ? "x" : " "}] ${p.text}`) : ["_None_"]),
     "",

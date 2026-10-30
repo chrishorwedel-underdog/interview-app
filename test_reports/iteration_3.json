@@ -1,0 +1,30 @@
+{
+  "summary": "Iteration 3: tested the Guest Prep Brief, the Talk Time Meter, text sizing, and regression. Backend: 29/29 pytest pass, including 5 new tests in test_iter3_brief.py. /api/brief returns the full shape (snapshot, key_facts, angles {title, why}, openers 3-5, deeper, watch_outs, created_at) in about 5-8s. Empty notes give 400 and missing notes give 422. The interview 'brief' field round-trips on POST, GET and PUT, including PUT with null. Frontend brief: open-brief-button opens the dialog. With no notes, the generate button is disabled and brief-empty says 'Add prep notes first'. With notes, all 6 sections and the print button render. Pinning an opener adds a pinned-question-item and pinning again removes it. The brief persists after reload, and the Brief button turns emerald. New interview clears the brief. Save, then load from the library, restores the brief. The markdown export contains '## Prep brief'. Talk meter: hidden when the transcript is empty. At 40 guest words and 40 host words it shows You 50% / Guest 50% and 'You're talking a lot'. At 30 host / 70 guest words it shows 'Spotlight on your guest'. In compact mode it appears in the Ask and Live tabs but not in Topics. Text size: root font is 18px, and the button cycles L 18px -> XL 20.16px -> M 16.2px -> L and persists after reload. 1920x800 has no horizontal scroll at any size. Compact 420px: no horizontal scroll at L and M; the header stays one row and the tabs stick right under it (top = header height) at all sizes. One bug found: at XL in compact 420px the header overflows. Regression: suggestions auto-generated after a guest line, and the compact tabs work.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "TopBar (compact, Text XL)", "issue": "At 420px width with text scale 1.12, the header is 437px wide (scrollWidth 437 vs 420). The Start button is clipped past the right edge and the page scrolls horizontally. Fine at L/M sizes and at >=440px width.", "selector": "header, [data-testid='start-listening-button']", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Desktop 1920x800, Text XL", "issues": ["When prep notes are expanded and the talk meter is shown, the live transcript box in the fixed-height left column shrinks to about 190px, roughly one turn visible. Consider auto-collapsing setup once the transcript starts, or letting the left column scroll."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_iter3_brief.py", "/app/backend/tests/test_iter2_coverage_library.py", "/app/backend/tests/test_interview_copilot.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Fix compact header overflow at Text XL on narrow widths (~420px): e.g. reduce Source pill padding/LevelMeter width in compact, make the Start button icon-only, or keep header font sizes in px so they don't scale with root."
+  ],
+  "critical_code_review_comments": [
+    "The markdown export only includes the brief snapshot and openers. Key facts, angles, deeper questions and watch outs are left out, though users may expect the full brief.",
+    "/api/brief does not cap list lengths, and a non-list value (e.g. key_facts as a string) would be iterated char by char. Add an isinstance(list) guard.",
+    "The pin toggle compares pins by exact text, so pinning the same question from the brief and from suggestions dedupes. That is fine.",
+    "Text scale stored as a float (1.12) is mapped to a label via an object key lookup. It works, but it is fragile if SCALES changes.",
+    "No files over 700 lines. data-testids are present. _id is not leaked."
+  ],
+  "updated_files": ["/app/backend/tests/test_iter3_brief.py"],
+  "success_rate": {"backend": "100%", "frontend": "95%"},
+  "seed_data_creation": "Interview 'TEST_Maya Chen' saved via the UI (id 6ae4a43fa908f1d47400ed58) is left in the library. Backend TEST_ interviews were deleted.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Text scale is in localStorage key fu-text-scale (1, 1.12, 0.9), and the brief is in fu-brief. The talk meter needs >60 words in the last 5 min and host >40% to warn. Set localStorage fu-segments directly to seed a transcript quickly. Run pytest with REACT_APP_BACKEND_URL exported."
+}

@@ -274,13 +274,18 @@ async def prep_brief(req: BriefRequest):
     data = parse_json(text)
     if not isinstance(data, dict):
         raise HTTPException(502, "AI returned malformed data, try again")
+    def strs(key, cap):
+        val = data.get(key)
+        return [str(x) for x in val][:cap] if isinstance(val, list) else []
+
+    angles = data.get("angles") if isinstance(data.get("angles"), list) else []
     return {
         "snapshot": str(data.get("snapshot", "")),
-        "key_facts": [str(x) for x in data.get("key_facts", [])],
-        "angles": [{"title": str(a.get("title", "")), "why": str(a.get("why", ""))} for a in data.get("angles", []) if isinstance(a, dict)],
-        "openers": [str(x) for x in data.get("openers", [])],
-        "deeper": [str(x) for x in data.get("deeper", [])],
-        "watch_outs": [str(x) for x in data.get("watch_outs", [])],
+        "key_facts": strs("key_facts", 10),
+        "angles": [{"title": str(a.get("title", "")), "why": str(a.get("why", ""))} for a in angles if isinstance(a, dict)][:6],
+        "openers": strs("openers", 6),
+        "deeper": strs("deeper", 8),
+        "watch_outs": strs("watch_outs", 5),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
