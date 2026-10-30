@@ -13,6 +13,7 @@ import { TalkMeter } from "@/components/TalkMeter";
 import { BriefDialog } from "@/components/BriefDialog";
 import { PacingPanel } from "@/components/PacingPanel";
 import { BriefGlance } from "@/components/BriefGlance";
+import { WrapUpNudge } from "@/components/WrapUpNudge";
 import { useHostSpeech } from "@/hooks/useHostSpeech";
 import { useGuestAudio } from "@/hooks/useGuestAudio";
 import { useLocalState } from "@/hooks/useLocalState";
@@ -247,7 +248,41 @@ export default function App() {
   }, []);
 
   const live = host.active || guest.active;
-  const { ms: elapsedMs, label: elapsed } = useElapsed(t0, live, segments.reduce((m, s) => Math.max(m, s.ts), 0));
+  const lastTs = segments.reduce((m, s) => Math.max(m, s.ts), 0);
+  const { ms: elapsedMs, label: elapsed } = useElapsed(t0, live, lastTs);
+  const active = live || Date.now() - lastTs < 60000;
+
+  const minutesLeft = targetMin - elapsedMs / 60000;
+  const inWrapWindow = segments.length > 0 && targetMin > 5 && minutesLeft <= 5;
+  const [wrap, setWrap] = useState({ shown: false, dismissed: false, questions: [], loading: false });
+  const generateWrap = useCallback(async () => {
+    const { setup: su, turns: tr, asked: as, topics: tp } = ctxRef.current;
+    if (!tr.length) return;
+    setWrap((w) => ({ ...w, loading: true }));
+    try {
+      const full = await streamSuggestions(
+        { ...su, focus: "wrapup", asked: as, open_topics: tp.filter((t) => t.status !== "covered").map((t) => t.label), transcript: tr.map(({ speaker, text }) => ({ speaker, text })) },
+        (text) => {
+          const qs = parseQuestions(text.includes("\n") ? text.slice(0, text.lastIndexOf("\n")) : "");
+          if (qs.length) setWrap((w) => ({ ...w, questions: qs }));
+        }
+      );
+      setWrap((w) => ({ ...w, questions: parseQuestions(full) }));
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setWrap((w) => ({ ...w, loading: false }));
+    }
+  }, []);
+  useEffect(() => {
+    if (inWrapWindow && active && !wrap.shown) {
+      setWrap((w) => ({ ...w, shown: true, dismissed: false }));
+      toast.warning("5 minutes left — time to start wrapping up");
+      generateWrap();
+    } else if (!inWrapWindow && wrap.shown) {
+      setWrap({ shown: false, dismissed: false, questions: [], loading: false });
+    }
+  }, [inWrapWindow, active]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const startHost = () => { try { host.start(); } catch (e) { toast.error(e.message); } };
   const startGuest = async () => {
@@ -286,6 +321,11 @@ export default function App() {
     talk: <TalkMeter segments={segments} />,
     pacing: <PacingPanel elapsedMs={elapsedMs} targetMin={targetMin} setTargetMin={setTargetMin} topics={topics} />,
     glance: <BriefGlance brief={brief} onOpen={() => setBriefOpen(true)} />,
+    wrap: wrap.shown && !wrap.dismissed ? (
+      <WrapUpNudge minutesLeft={minutesLeft} openTopics={topics.filter((t) => t.status !== "covered").map((t) => t.label)}
+        questions={wrap.questions} loading={wrap.loading} onRefresh={generateWrap}
+        onDismiss={() => setWrap((w) => ({ ...w, dismissed: true }))} isPinned={isPinned} onPin={togglePin} />
+    ) : null,
     transcript: (
       <TranscriptFeed turns={turns} interim={host.interim} guestName={setup.guest_name} t0={t0}
         onAdd={(sp, text) => addSegment(sp, text)} onClear={clearTranscript} guestSpeaking={guest.speaking} compact={compact} />
@@ -328,6 +368,7 @@ export default function App() {
             {panels.transcript}
           </div>
           <div className="lg:col-span-7 flex flex-col gap-4">
+            {panels.wrap}
             {panels.suggestions}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
               <div className="flex flex-col gap-4">

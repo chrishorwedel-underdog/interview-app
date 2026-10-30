@@ -26,6 +26,7 @@ export const CompactLayout = ({ panels, counts }) => {
         {tab === "suggestions" ? (
           <>
             {panels.talk}
+            {panels.wrap}
             {panels.suggestions}
             {panels.glance}
             {panels.pinned}
