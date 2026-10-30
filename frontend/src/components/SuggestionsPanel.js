@@ -18,7 +18,7 @@ export const SuggestionsPanel = ({ questions, loading, error, focus, setFocus, o
       </span>
       <div className="flex items-center gap-2">
         <button onClick={() => setAuto(!auto)} data-testid="auto-toggle-button"
-          className={`text-[10px] font-mono uppercase tracking-widest rounded-full border px-2.5 py-1 transition-colors ${auto ? "border-emerald-500/40 text-emerald-400" : "border-white/10 text-slate-500"}`}>
+          className={`text-[10px] font-mono uppercase tracking-widest rounded-full border px-2.5 py-1 transition-colors ${auto ? "border-emerald-500/40 text-emerald-400" : "border-white/10 text-slate-400"}`}>
           Auto {auto ? "on" : "off"}
         </button>
         <button onClick={onRefresh} disabled={!canGenerate} data-testid="generate-now-button"
@@ -30,7 +30,7 @@ export const SuggestionsPanel = ({ questions, loading, error, focus, setFocus, o
     <div className="flex gap-1.5 overflow-x-auto px-4 pt-3" data-testid="focus-filters">
       {FOCUSES.map(([k, label]) => (
         <button key={k} onClick={() => setFocus(k)} data-testid={`focus-${k}-button`}
-          className={`shrink-0 rounded-full px-3 py-1 text-xs transition-colors ${focus === k ? "bg-slate-100 text-slate-900" : "bg-white/5 text-slate-400 hover:text-slate-100"}`}>
+          className={`shrink-0 rounded-full px-3 py-1 text-xs transition-colors ${focus === k ? "bg-slate-100 text-slate-900" : "bg-white/5 text-slate-300 hover:text-slate-100"}`}>
           {label}
         </button>
       ))}
@@ -38,7 +38,7 @@ export const SuggestionsPanel = ({ questions, loading, error, focus, setFocus, o
     <div className="p-4 space-y-3">
       {error && <p className="text-sm text-rose-400" data-testid="suggestions-error">{error}</p>}
       {questions.length === 0 && !loading && (
-        <p className="text-sm text-slate-500 py-10 leading-relaxed" data-testid="suggestions-empty">
+        <p className="text-sm text-slate-400 py-10 leading-relaxed" data-testid="suggestions-empty">
           Follow-up questions appear here automatically each time your guest pauses. They keep updating while the guest talks, so a fresh set is ready the moment they finish.
         </p>
       )}

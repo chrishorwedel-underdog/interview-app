@@ -6,10 +6,16 @@ import { SetupPanel } from "@/components/SetupPanel";
 import { TranscriptFeed } from "@/components/TranscriptFeed";
 import { SuggestionsPanel } from "@/components/SuggestionsPanel";
 import { PinnedPanel } from "@/components/PinnedPanel";
+import { CoveragePanel } from "@/components/CoveragePanel";
+import { LibrarySheet } from "@/components/LibrarySheet";
+import { CompactLayout } from "@/components/CompactLayout";
 import { useHostSpeech } from "@/hooks/useHostSpeech";
 import { useGuestAudio } from "@/hooks/useGuestAudio";
 import { useLocalState } from "@/hooks/useLocalState";
-import { transcribeBlob, streamSuggestions, parseQuestions } from "@/lib/api";
+import { transcribeBlob, streamSuggestions, parseQuestions, api } from "@/lib/api";
+
+const RANK = { open: 0, touched: 1, covered: 2 };
+const NEXT = { open: "touched", touched: "covered", covered: "open" };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 const MERGE_GAP_MS = 12000;
@@ -43,6 +49,14 @@ export default function App() {
   const [pinned, setPinned] = useLocalState("fu-pinned", []);
   const [asked, setAsked] = useLocalState("fu-asked", []);
   const [segments, setSegments] = useLocalState("fu-segments", []);
+  const [topics, setTopics] = useLocalState("fu-topics", []);
+  const [interviewId, setInterviewId] = useLocalState("fu-interview-id", null);
+  const [compact, setCompact] = useLocalState("fu-compact", window.innerWidth < 900);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [extracting, setExtracting] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const covRef = useRef({ busy: false, last: 0, timer: null });
   const [focus, setFocus] = useState("balanced");
   const [auto, setAuto] = useState(true);
   const [questions, setQuestions] = useState([]);
@@ -54,7 +68,7 @@ export default function App() {
 
   const turns = useMemo(() => mergeTurns(segments), [segments]);
   const ctxRef = useRef({});
-  ctxRef.current = { setup, turns, focus, asked };
+  ctxRef.current = { setup, turns, focus, asked, topics, segments, pinned, interviewId };
 
   const addSegment = useCallback((speaker, text, ts = Date.now()) => {
     if (!text) return;
@@ -63,7 +77,7 @@ export default function App() {
   }, [setSegments]);
 
   const generate = useCallback(async () => {
-    const { setup: su, turns: tr, focus: fo, asked: as } = ctxRef.current;
+    const { setup: su, turns: tr, focus: fo, asked: as, topics: tp } = ctxRef.current;
     if (!tr.length) return;
     abortRef.current?.abort();
     const ctrl = new AbortController();
@@ -73,7 +87,7 @@ export default function App() {
     setQuestions((q) => q.map((x) => ({ ...x, stale: true })));
     try {
       await streamSuggestions(
-        { ...su, focus: fo, asked: as, transcript: tr.map(({ speaker, text }) => ({ speaker, text })) },
+        { ...su, focus: fo, asked: as, open_topics: tp.filter((t) => t.status !== "covered").map((t) => t.label), transcript: tr.map(({ speaker, text }) => ({ speaker, text })) },
         (full) => {
           const qs = parseQuestions(full.includes("\n") ? full.slice(0, full.lastIndexOf("\n")) : "");
           if (qs.length) setQuestions(qs);
@@ -87,10 +101,98 @@ export default function App() {
     }
   }, []);
 
+  const checkCoverage = useCallback(async (force) => {
+    const c = covRef.current;
+    const { topics: tp, turns: tr } = ctxRef.current;
+    if (!tp.length || !tr.length) return;
+    const wait = 15000 - (Date.now() - c.last);
+    if (c.busy || (!force && wait > 0)) {
+      if (!c.timer) c.timer = setTimeout(() => { c.timer = null; checkCoverage(true); }, Math.max(wait, 3000));
+      return;
+    }
+    c.busy = true;
+    c.last = Date.now();
+    setChecking(true);
+    try {
+      const res = await api.coverage(tp, tr.map(({ speaker, text }) => ({ speaker, text })));
+      const status = Object.fromEntries(res.topics.map((t) => [t.id, t.status]));
+      setTopics((cur) => cur.map((t) => (RANK[status[t.id]] > RANK[t.status] ? { ...t, status: status[t.id] } : t)));
+    } catch (_) {
+      // coverage is best-effort during a live call
+    } finally {
+      c.busy = false;
+      setChecking(false);
+    }
+  }, [setTopics]);
+
   // Regenerate whenever a new guest segment lands (each pause or every ~7s of talking).
   useEffect(() => {
-    if (guestTick && auto) generate();
+    if (!guestTick) return;
+    if (auto) generate();
+    checkCoverage(false);
   }, [guestTick]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const extractTopics = async () => {
+    if (topics.length && !window.confirm("Replace the current topic list with a fresh one from your notes?")) return;
+    setExtracting(true);
+    try {
+      const res = await api.extractTopics(setup.topic, setup.notes);
+      setTopics(res.topics);
+      if (turns.length) setTimeout(() => checkCoverage(true), 0);
+    } catch (e) {
+      toast.error(e.message);
+    } finally {
+      setExtracting(false);
+    }
+  };
+  const cycleTopic = (id) => setTopics((ts) => ts.map((t) => (t.id === id ? { ...t, status: NEXT[t.status] } : t)));
+  const addTopic = (label) => setTopics((ts) => [...ts, { id: uid(), label, status: "open" }]);
+  const removeTopic = (id) => setTopics((ts) => ts.filter((t) => t.id !== id));
+
+  const saveInterview = async (quiet) => {
+    const { setup: su, segments: sg, pinned: pn, topics: tp, interviewId: id } = ctxRef.current;
+    const body = { ...su, segments: sg, pinned: pn, topics: tp };
+    setSaving(true);
+    try {
+      let res;
+      try {
+        res = id ? await api.updateInterview(id, body) : await api.createInterview(body);
+      } catch (e) {
+        if (e.status !== 404) throw e;
+        res = await api.createInterview(body);
+      }
+      setInterviewId(res.id);
+      if (!quiet) toast.success("Interview saved");
+    } catch (e) {
+      toast.error(`Couldn't save: ${e.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const resetWorkspace = (data = {}) => {
+    abortRef.current?.abort();
+    setSetup({ guest_name: data.guest_name || "", topic: data.topic || "", notes: data.notes || "" });
+    setSegments(data.segments || []);
+    setPinned(data.pinned || []);
+    setTopics(data.topics || []);
+    setInterviewId(data.id || null);
+    setAsked([]);
+    setQuestions([]);
+    setT0(data.segments?.length ? Math.min(...data.segments.map((s) => s.ts)) : Date.now());
+  };
+  const loadInterview = (iv) => {
+    if (live) return toast.error("Stop listening before opening another interview");
+    resetWorkspace(iv);
+    setLibraryOpen(false);
+    toast.success("Interview opened");
+  };
+  const newInterview = () => {
+    if (live) return toast.error("Stop listening first");
+    if (segments.length && !window.confirm("Start a new interview? Save the current one first if you want to keep it.")) return;
+    resetWorkspace();
+    setLibraryOpen(false);
+  };
 
   const host = useHostSpeech((text) => addSegment("host", text));
   const guest = useGuestAudio(async (blob, startedAt) => {
@@ -119,10 +221,15 @@ export default function App() {
   };
   const startAll = async () => {
     if (!segments.length) setT0(Date.now());
+    if (setup.notes.trim() && !topics.length) extractTopics();
     startHost();
     await startGuest();
   };
-  const stopAll = () => { host.stop(); guest.stop(); };
+  const stopAll = () => {
+    host.stop();
+    guest.stop();
+    if (segments.length) setTimeout(() => saveInterview(true).then(() => toast.success("Interview auto-saved")), 1500);
+  };
 
   const isPinned = (text) => pinned.some((p) => p.text === text);
   const togglePin = (q) => {
@@ -136,31 +243,58 @@ export default function App() {
   };
   const clearTranscript = () => {
     if (!window.confirm("Clear the transcript and start a fresh interview?")) return;
-    setSegments([]); setAsked([]); setQuestions([]); setT0(Date.now());
+    setSegments([]); setAsked([]); setQuestions([]); setT0(Date.now()); setInterviewId(null);
+    setTopics((ts) => ts.map((t) => ({ ...t, status: "open" })));
   };
+
+  const panels = {
+    setup: <SetupPanel setup={setup} setSetup={setSetup} />,
+    transcript: (
+      <TranscriptFeed turns={turns} interim={host.interim} guestName={setup.guest_name} t0={t0}
+        onAdd={(sp, text) => addSegment(sp, text)} onClear={clearTranscript} guestSpeaking={guest.speaking} />
+    ),
+    suggestions: (
+      <SuggestionsPanel questions={questions} loading={loading} error={error} focus={focus}
+        setFocus={(f) => { setFocus(f); ctxRef.current.focus = f; if (turns.length) generate(); }}
+        onRefresh={generate} canGenerate={turns.length > 0 && !loading} auto={auto} setAuto={setAuto}
+        isPinned={isPinned} onPin={togglePin} onCopy={copy} onUsed={markUsed} />
+    ),
+    coverage: (
+      <CoveragePanel topics={topics} extracting={extracting} checking={checking} hasNotes={!!setup.notes.trim()}
+        onExtract={extractTopics} onCheck={() => checkCoverage(true)} onCycle={cycleTopic} onAdd={addTopic} onRemove={removeTopic} />
+    ),
+    pinned: (
+      <PinnedPanel pinned={pinned} onCopy={copy} onClear={() => setPinned([])}
+        onRemove={(id) => setPinned((ps) => ps.filter((p) => p.id !== id))}
+        onToggleAsked={(id) => setPinned((ps) => ps.map((p) => (p.id === id ? { ...p, asked: !p.asked } : p)))} />
+    ),
+  };
+  const counts = { coverage: topics.length ? `${topics.filter((t) => t.status === "covered").length}/${topics.length}` : "", pinned: pinned.length || "" };
 
   return (
     <div className="app-root">
       <Toaster theme="dark" position="bottom-center" />
       <TopBar host={host} guest={guest} live={live} elapsed={elapsed} onStart={startAll} onStop={stopAll}
         onToggleHost={() => (host.active ? host.stop() : startHost())}
-        onToggleGuest={() => (guest.active ? guest.stop() : startGuest())} />
-      <main className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 md:p-6">
-        <div className="lg:col-span-5 flex flex-col gap-4 lg:h-[calc(100vh-110px)] lg:sticky lg:top-[86px]">
-          <SetupPanel setup={setup} setSetup={setSetup} />
-          <TranscriptFeed turns={turns} interim={host.interim} guestName={setup.guest_name} t0={t0}
-            onAdd={(sp, text) => addSegment(sp, text)} onClear={clearTranscript} guestSpeaking={guest.speaking} />
-        </div>
-        <div className="lg:col-span-7 flex flex-col gap-4">
-          <SuggestionsPanel questions={questions} loading={loading} error={error} focus={focus}
-            setFocus={(f) => { setFocus(f); ctxRef.current.focus = f; if (turns.length) generate(); }}
-            onRefresh={generate} canGenerate={turns.length > 0 && !loading} auto={auto} setAuto={setAuto}
-            isPinned={isPinned} onPin={togglePin} onCopy={copy} onUsed={markUsed} />
-          <PinnedPanel pinned={pinned} onCopy={copy} onClear={() => setPinned([])}
-            onRemove={(id) => setPinned(pinned.filter((p) => p.id !== id))}
-            onToggleAsked={(id) => setPinned(pinned.map((p) => (p.id === id ? { ...p, asked: !p.asked } : p)))} />
-        </div>
-      </main>
+        onToggleGuest={() => (guest.active ? guest.stop() : startGuest())}
+        compact={compact} onToggleCompact={() => setCompact(!compact)} saving={saving}
+        onSave={() => saveInterview(false)} onLibrary={() => setLibraryOpen(true)} />
+      <LibrarySheet open={libraryOpen} onOpenChange={setLibraryOpen} onLoad={loadInterview} onNew={newInterview} currentId={interviewId} />
+      {compact ? <CompactLayout panels={panels} counts={counts} /> : (
+        <main className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 md:p-6">
+          <div className="lg:col-span-5 flex flex-col gap-4 lg:h-[calc(100vh-110px)] lg:sticky lg:top-[86px]">
+            {panels.setup}
+            {panels.transcript}
+          </div>
+          <div className="lg:col-span-7 flex flex-col gap-4">
+            {panels.suggestions}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
+              {panels.coverage}
+              {panels.pinned}
+            </div>
+          </div>
+        </main>
+      )}
     </div>
   );
 }

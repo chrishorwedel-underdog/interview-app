@@ -1,5 +1,30 @@
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+async function call(method, path, body) {
+  const res = await fetch(`${API}${path}`, {
+    method,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(typeof data.detail === "string" ? data.detail : "Request failed");
+    err.status = res.status;
+    throw err;
+  }
+  return data;
+}
+
+export const api = {
+  extractTopics: (topic, notes) => call("POST", "/topics/extract", { topic, notes }),
+  coverage: (topics, transcript) => call("POST", "/topics/coverage", { topics, transcript }),
+  listInterviews: () => call("GET", "/interviews"),
+  getInterview: (id) => call("GET", `/interviews/${id}`),
+  createInterview: (body) => call("POST", "/interviews", body),
+  updateInterview: (id, body) => call("PUT", `/interviews/${id}`, body),
+  deleteInterview: (id) => call("DELETE", `/interviews/${id}`),
+};
+
 export async function transcribeBlob(blob, prompt) {
   const fd = new FormData();
   fd.append("file", blob, "chunk.webm");

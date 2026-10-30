@@ -10,28 +10,29 @@
 }
 .font-display { font-family: "Bricolage Grotesque", sans-serif; }
 .font-mono, .eyebrow { font-family: "IBM Plex Mono", monospace; }
-.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #94a3b8; }
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #dbe4ef; }
 .panel {
-  background: rgba(15, 23, 42, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(17, 25, 44, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   backdrop-filter: blur(16px);
 }
 .panel-inner {
-  background: rgba(2, 6, 23, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 10, 24, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 10px;
 }
 .field {
-  background: rgba(2, 6, 23, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #f1f5f9;
+  background: rgba(5, 10, 24, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #f8fafc;
 }
-.field:focus { border-color: rgba(16, 185, 129, 0.5) !important; }
+.field::placeholder { color: #94a3b8; }
+.field:focus { border-color: rgba(16, 185, 129, 0.6) !important; }
 .icon-btn {
   padding: 6px;
   border-radius: 6px;
-  color: #94a3b8;
+  color: #cbd5e1;
   transition: color 0.15s, background-color 0.15s, opacity 0.15s;
 }
 .icon-btn:hover { color: #f8fafc; background: rgba(255, 255, 255, 0.08); }

@@ -1,46 +1,63 @@
-import { Mic, MonitorSpeaker, Square, Radio } from "lucide-react";
+import { Mic, MonitorSpeaker, Square, Radio, Save, Library, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { LevelMeter } from "./LevelMeter";
 
-const Source = ({ icon: Icon, label, on, level, color, testId, onClick }) => (
+const Source = ({ icon: Icon, label, on, level, color, testId, onClick, compact }) => (
   <button
     onClick={onClick}
     data-testid={testId}
-    className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-mono uppercase tracking-widest transition-colors duration-200 ${
-      on ? "border-white/20 bg-white/5 text-slate-100" : "border-white/10 text-slate-500 hover:text-slate-200 hover:border-white/25"
+    title={label}
+    className={`flex items-center gap-2 rounded-full border ${compact ? "px-2.5" : "px-3"} py-1.5 text-xs font-mono uppercase tracking-widest transition-colors duration-200 ${
+      on ? "border-white/25 bg-white/10 text-white" : "border-white/15 text-slate-300 hover:text-white hover:border-white/30"
     }`}
   >
     <Icon size={14} style={{ color: on ? color : undefined }} />
-    {label}
+    {!compact && label}
     <LevelMeter level={level} color={color} active={on} />
   </button>
 );
 
-export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onToggleGuest, elapsed }) => (
-  <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 md:px-6 py-3 bg-[#090d16]/90 backdrop-blur-xl sticky top-0 z-20">
+const Tool = ({ icon: Icon, label, onClick, testId, compact }) => (
+  <button onClick={onClick} data-testid={testId} title={label}
+    className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs text-slate-200 hover:text-white hover:bg-white/10 transition-colors">
+    <Icon size={15} /> {!compact && <span className="hidden xl:inline">{label}</span>}
+  </button>
+);
+
+export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onToggleGuest, elapsed, compact, onToggleCompact, onSave, onLibrary, saving }) => (
+  <header className={`flex items-center justify-between ${compact ? "flex-nowrap gap-1 px-2 py-2" : "flex-wrap gap-2 px-4 md:px-6 py-3"} border-b border-white/10 bg-[#090d16]/95 backdrop-blur-xl sticky top-0 z-20`}>
     <div className="flex items-center gap-3">
-      <div className="h-8 w-8 rounded-md bg-emerald-500/15 border border-emerald-400/30 grid place-items-center">
-        <Radio size={16} className="text-emerald-400" />
-      </div>
-      <div>
-        <h1 className="font-display text-lg font-bold tracking-tight leading-none">Follow-Up</h1>
-        <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-slate-500">interview co-pilot</p>
+      {!compact && (
+        <div className="h-8 w-8 rounded-md bg-emerald-500/15 border border-emerald-400/30 grid place-items-center">
+          <Radio size={16} className="text-emerald-400" />
+        </div>
+      )}
+      {!compact && (
+        <div>
+          <h1 className="font-display text-lg font-bold tracking-tight leading-none">Follow-Up</h1>
+          <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-slate-300">interview co-pilot</p>
+        </div>
+      )}
+      <div className="flex items-center">
+        <Tool icon={Save} label={saving ? "Saving..." : "Save"} onClick={onSave} testId="save-interview-button" compact={compact} />
+        <Tool icon={Library} label="Saved" onClick={onLibrary} testId="open-library-button" compact={compact} />
+        <Tool icon={compact ? PanelRightOpen : PanelRightClose} label={compact ? "Full layout" : "Side window"} onClick={onToggleCompact} testId="compact-toggle-button" compact={compact} />
       </div>
     </div>
-    <div className="flex flex-wrap items-center gap-2">
-      <Source icon={Mic} label="You" on={host.active} level={host.active ? 0.6 : 0} color="#38bdf8" testId="toggle-host-mic" onClick={onToggleHost} />
-      <Source icon={MonitorSpeaker} label="Guest" on={guest.active} level={guest.level} color="#10b981" testId="toggle-guest-audio" onClick={onToggleGuest} />
+    <div className={`flex items-center ${compact ? "gap-1" : "flex-wrap gap-2"}`}>
+      <Source icon={Mic} label="You" on={host.active} level={host.active ? 0.6 : 0} color="#38bdf8" testId="toggle-host-mic" onClick={onToggleHost} compact={compact} />
+      <Source icon={MonitorSpeaker} label="Guest" on={guest.active} level={guest.level} color="#10b981" testId="toggle-guest-audio" onClick={onToggleGuest} compact={compact} />
       {live && (
         <span className="flex items-center gap-2 font-mono text-xs text-slate-300 px-2" data-testid="live-timer">
           <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" /> {elapsed}
         </span>
       )}
       {live ? (
-        <button onClick={onStop} data-testid="stop-listening-button" className="flex items-center gap-2 rounded-full bg-red-500/90 hover:bg-red-500 px-4 py-2 text-sm font-semibold transition-colors">
+        <button onClick={onStop} data-testid="stop-listening-button" className={`flex items-center gap-2 rounded-full bg-red-500/90 hover:bg-red-500 ${compact ? "px-3" : "px-4"} py-2 text-sm font-semibold transition-colors`}>
           <Square size={14} /> Stop
         </button>
       ) : (
-        <button onClick={onStart} data-testid="start-listening-button" className="flex items-center gap-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#04110b] px-4 py-2 text-sm font-semibold transition-colors">
-          <Mic size={14} /> <span className="hidden sm:inline">Start listening</span><span className="sm:hidden">Start</span>
+        <button onClick={onStart} data-testid="start-listening-button" className={`flex items-center gap-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-[#04110b] ${compact ? "px-3" : "px-4"} py-2 text-sm font-semibold transition-colors`}>
+          <Mic size={14} /> {compact ? <span>Start</span> : <><span className="hidden sm:inline">Start listening</span><span className="sm:hidden">Start</span></>}
         </button>
       )}
     </div>

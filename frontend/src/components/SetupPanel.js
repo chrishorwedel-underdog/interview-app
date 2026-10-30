@@ -10,7 +10,7 @@ export const SetupPanel = ({ setup, setSetup }) => {
     <section className="panel" data-testid="setup-panel">
       <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between px-4 py-3" data-testid="setup-toggle-button">
         <span className="eyebrow flex items-center gap-2"><NotebookPen size={13} /> Prep notes</span>
-        <span className="flex items-center gap-2 text-xs text-slate-400 truncate max-w-[60%]">
+        <span className="flex items-center gap-2 text-xs text-slate-300 truncate max-w-[60%]">
           {!open && (setup.guest_name || setup.topic) && <span className="truncate">{[setup.guest_name, setup.topic].filter(Boolean).join(" · ")}</span>}
           <ChevronDown size={16} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
         </span>
@@ -28,7 +28,7 @@ export const SetupPanel = ({ setup, setSetup }) => {
             onChange={set("notes")}
             className="field min-h-[160px] text-sm leading-relaxed"
           />
-          <p className="text-[11px] font-mono text-slate-500" data-testid="setup-notes-count">{setup.notes.length.toLocaleString()} characters · saved on this device</p>
+          <p className="text-[11px] font-mono text-slate-400" data-testid="setup-notes-count">{setup.notes.length.toLocaleString()} characters · saved on this device</p>
         </div>
       )}
     </section>
