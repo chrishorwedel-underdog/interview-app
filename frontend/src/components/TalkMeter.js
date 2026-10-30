@@ -45,9 +45,9 @@ export const TalkMeter = ({ segments }) => {
         <Bar data={overall} testId="talk-meter-overall-bar" />
       </div>
       <div className="flex items-center gap-3">
-        <span className="shrink-0 text-xs font-mono uppercase tracking-widest text-slate-300">Last 5 min</span>
+        <span className="shrink-0 text-xs font-mono uppercase tracking-widest text-white">Last 5 min</span>
         <div className="flex-1"><Bar data={recent} testId="talk-meter-recent-bar" /></div>
-        <span className="shrink-0 text-xs font-mono text-slate-200" data-testid="talk-meter-recent-pct">{recent.hostPct}% you</span>
+        <span className="shrink-0 text-xs font-mono text-white" data-testid="talk-meter-recent-pct">{recent.hostPct}% you</span>
       </div>
     </section>
   );

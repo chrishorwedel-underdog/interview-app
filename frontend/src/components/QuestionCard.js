@@ -7,7 +7,7 @@ export const TYPE_COLORS = {
   Challenge: "text-rose-300 border-rose-500/30 bg-rose-500/10",
   Story: "text-amber-300 border-amber-500/30 bg-amber-500/10",
   Connect: "text-violet-300 border-violet-500/30 bg-violet-500/10",
-  Pivot: "text-slate-300 border-slate-500/30 bg-slate-500/10",
+  Pivot: "text-white border-slate-500/30 bg-slate-500/10",
 };
 
 export const QuestionCard = ({ q, index, pinned, onPin, onCopy, onUsed, stale }) => (
@@ -26,6 +26,6 @@ export const QuestionCard = ({ q, index, pinned, onPin, onCopy, onUsed, stale })
         <button onClick={onPin} title="Pin" data-testid="pin-question-button" className={`icon-btn ${pinned ? "text-amber-400" : ""}`}><Pin size={15} fill={pinned ? "currentColor" : "none"} /></button>
       </div>
     </div>
-    <p className="text-lg md:text-xl font-medium leading-snug text-slate-50" data-testid="question-text">{q.text}</p>
+    <p className="text-lg md:text-xl font-medium leading-snug text-white" data-testid="question-text">{q.text}</p>
   </motion.article>
 );

@@ -11,10 +11,10 @@ const InterviewDetail = ({ iv, onBack, onLoad, onDelete }) => {
   const segs = [...iv.segments].sort((a, b) => a.ts - b.ts);
   return (
     <div className="flex flex-col gap-4" data-testid="library-detail">
-      <button onClick={onBack} data-testid="library-back-button" className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-white w-fit"><ArrowLeft size={14} /> All interviews</button>
+      <button onClick={onBack} data-testid="library-back-button" className="flex items-center gap-1.5 text-sm text-white hover:text-white w-fit"><ArrowLeft size={14} /> All interviews</button>
       <div>
         <h3 className="font-display text-xl font-bold">{iv.guest_name || "Untitled guest"}</h3>
-        <p className="text-sm text-slate-300">{iv.topic || "No topic"} · {when(iv.updated_at)}</p>
+        <p className="text-sm text-white">{iv.topic || "No topic"} · {when(iv.updated_at)}</p>
       </div>
       <div className="flex flex-wrap gap-2">
         <button onClick={() => onLoad(iv)} data-testid="library-load-button" className="flex items-center gap-1.5 rounded-full bg-emerald-500 text-[#04110b] font-semibold px-3 py-1.5 text-sm hover:bg-emerald-400 transition-colors"><FolderOpen size={14} /> Open in workspace</button>
@@ -23,22 +23,22 @@ const InterviewDetail = ({ iv, onBack, onLoad, onDelete }) => {
       </div>
       <div>
         <p className="eyebrow mb-2">Shortlist</p>
-        {iv.pinned.length === 0 ? <p className="text-sm text-slate-400">No pinned questions.</p> : (
-          <ul className="space-y-1.5">{iv.pinned.map((p) => <li key={p.id} className={`text-sm ${p.asked ? "line-through text-slate-400" : "text-slate-100"}`}>• {p.text}</li>)}</ul>
+        {iv.pinned.length === 0 ? <p className="text-sm text-white">No pinned questions.</p> : (
+          <ul className="space-y-1.5">{iv.pinned.map((p) => <li key={p.id} className={`text-sm ${p.asked ? "line-through text-white" : "text-white"}`}>• {p.text}</li>)}</ul>
         )}
       </div>
       {iv.topics.length > 0 && (
         <div>
           <p className="eyebrow mb-2">Coverage</p>
-          <p className="text-sm text-slate-200">{iv.topics.map((t) => `${{ covered: "✓", touched: "◐", open: "○" }[t.status]} ${t.label}`).join("   ")}</p>
+          <p className="text-sm text-white">{iv.topics.map((t) => `${{ covered: "✓", touched: "◐", open: "○" }[t.status]} ${t.label}`).join("   ")}</p>
         </div>
       )}
       <div>
         <p className="eyebrow mb-2">Transcript</p>
         <div className="space-y-3" data-testid="library-transcript">
-          {segs.length === 0 && <p className="text-sm text-slate-400">Empty transcript.</p>}
+          {segs.length === 0 && <p className="text-sm text-white">Empty transcript.</p>}
           {segs.map((s) => (
-            <p key={s.id} className="text-sm leading-relaxed text-slate-100">
+            <p key={s.id} className="text-sm leading-relaxed text-white">
               <span className={`font-mono text-[0.78rem] uppercase tracking-widest mr-2 ${s.speaker === "guest" ? "text-emerald-300" : "text-sky-300"}`}>{s.speaker === "guest" ? iv.guest_name || "Guest" : "You"}</span>{s.text}
             </p>
           ))}
@@ -73,25 +73,25 @@ export const LibrarySheet = ({ open, onOpenChange, onLoad, onNew, currentId }) =
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-lg bg-[#0b1120] border-white/10 text-slate-50 overflow-y-auto" data-testid="library-sheet">
-        <SheetHeader><SheetTitle className="font-display text-slate-50 text-left">Saved interviews</SheetTitle></SheetHeader>
+      <SheetContent side="right" className="w-full sm:max-w-lg bg-[#0b1120] border-white/10 text-white overflow-y-auto" data-testid="library-sheet">
+        <SheetHeader><SheetTitle className="font-display text-white text-left">Saved interviews</SheetTitle></SheetHeader>
         <div className="mt-5">
           {detail ? (
             <InterviewDetail iv={detail} onBack={() => setDetail(null)} onLoad={onLoad} onDelete={remove} />
           ) : (
             <div className="space-y-2">
-              <button onClick={onNew} data-testid="library-new-button" className="flex w-full items-center gap-2 rounded-lg border border-dashed border-white/20 px-4 py-3 text-sm text-slate-200 hover:border-emerald-400/60 hover:text-white transition-colors"><Plus size={15} /> Start a new interview</button>
-              {items === null && <Loader2 className="animate-spin text-slate-400 mx-auto mt-6" />}
-              {items?.length === 0 && <p className="text-sm text-slate-300 py-4" data-testid="library-empty">Nothing saved yet. Use Save in the top bar — interviews also save automatically when you press Stop.</p>}
+              <button onClick={onNew} data-testid="library-new-button" className="flex w-full items-center gap-2 rounded-lg border border-dashed border-white/20 px-4 py-3 text-sm text-white hover:border-emerald-400/60 hover:text-white transition-colors"><Plus size={15} /> Start a new interview</button>
+              {items === null && <Loader2 className="animate-spin text-white mx-auto mt-6" />}
+              {items?.length === 0 && <p className="text-sm text-white py-4" data-testid="library-empty">Nothing saved yet. Use Save in the top bar — interviews also save automatically when you press Stop.</p>}
               {items?.map((it) => (
                 <button key={it.id} onClick={() => openItem(it.id)} data-testid="library-item"
                   className="w-full text-left rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 hover:border-white/25 hover:bg-white/[0.06] transition-colors">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-slate-50 truncate">{it.guest_name || "Untitled guest"}</span>
+                    <span className="font-semibold text-white truncate">{it.guest_name || "Untitled guest"}</span>
                     {it.id === currentId && <span className="text-[0.72rem] font-mono uppercase tracking-widest text-emerald-300">current</span>}
                   </div>
-                  <p className="text-sm text-slate-300 truncate">{it.topic || "No topic"}</p>
-                  <p className="mt-1 text-[0.78rem] font-mono text-slate-400">{when(it.updated_at)} · {it.turns} lines · {it.pinned} pinned</p>
+                  <p className="text-sm text-white truncate">{it.topic || "No topic"}</p>
+                  <p className="mt-1 text-[0.78rem] font-mono text-white">{when(it.updated_at)} · {it.turns} lines · {it.pinned} pinned</p>
                 </button>
               ))}
             </div>

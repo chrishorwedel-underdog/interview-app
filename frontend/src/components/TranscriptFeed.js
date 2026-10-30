@@ -38,24 +38,24 @@ export const TranscriptFeed = ({ turns, interim, guestName, t0, onAdd, onClear, 
         <span className="eyebrow">Live transcript</span>
         <div className="flex items-center gap-3">
           {guestSpeaking && <span className="text-[0.72rem] font-mono uppercase tracking-widest text-emerald-400 animate-pulse" data-testid="guest-speaking-indicator">guest speaking</span>}
-          {turns.length > 0 && <button onClick={onClear} data-testid="clear-transcript-button" className="text-slate-400 hover:text-red-400 transition-colors"><Trash2 size={14} /></button>}
+          {turns.length > 0 && <button onClick={onClear} data-testid="clear-transcript-button" className="text-white hover:text-red-400 transition-colors"><Trash2 size={14} /></button>}
         </div>
       </div>
       <div ref={ref} className={`flex-1 overflow-y-auto px-4 py-3 space-y-4 ${compact ? "" : "max-h-[50vh]"} lg:max-h-none`} data-testid="live-transcript-container">
         {turns.length === 0 && !interim && (
-          <p className="text-sm text-slate-400 leading-relaxed pt-6" data-testid="transcript-empty">Press <b className="text-slate-300">Start listening</b>, allow your mic, then pick your video call's tab and turn on <b className="text-slate-300">Share tab audio</b>. What you and your guest say will appear here.</p>
+          <p className="text-sm text-white leading-relaxed pt-6" data-testid="transcript-empty">Press <b className="text-white">Start listening</b>, allow your mic, then pick your video call's tab and turn on <b className="text-white">Share tab audio</b>. What you and your guest say will appear here.</p>
         )}
         {turns.map((t) => (
           <motion.div key={t.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} data-testid={`transcript-${t.speaker}-item`}
             className={`border-l-2 pl-3 ${t.speaker === "guest" ? "border-emerald-500" : "border-sky-500/60"}`}>
             <div className="flex items-center gap-2 text-[0.72rem] font-mono uppercase tracking-widest mb-1">
               <span className={t.speaker === "guest" ? "text-emerald-400" : "text-sky-400"}>{t.speaker === "guest" ? guestName || "Guest" : "You"}</span>
-              <span className="text-slate-500">{fmt(t.ts, t0)}</span>
+              <span className="text-white">{fmt(t.ts, t0)}</span>
             </div>
-            <p className={`text-sm leading-relaxed ${t.speaker === "guest" ? "text-slate-100" : "text-slate-300"}`}>{t.text}</p>
+            <p className={`text-sm leading-relaxed ${t.speaker === "guest" ? "text-white" : "text-white"}`}>{t.text}</p>
           </motion.div>
         ))}
-        {interim && <p className="border-l-2 border-sky-500/30 pl-3 text-sm italic text-slate-400" data-testid="transcript-interim">{interim}</p>}
+        {interim && <p className="border-l-2 border-sky-500/30 pl-3 text-sm italic text-white" data-testid="transcript-interim">{interim}</p>}
       </div>
       <ManualLine onAdd={onAdd} />
     </section>

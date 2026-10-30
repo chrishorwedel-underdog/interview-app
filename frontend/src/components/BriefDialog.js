@@ -12,8 +12,8 @@ const QuestionList = ({ items, isPinned, onPin, testId }) => (
   <ol className="space-y-2" data-testid={testId}>
     {items.map((q, i) => (
       <li key={i} className="flex items-start gap-2">
-        <span className="font-mono text-sm text-slate-400 mt-0.5">{i + 1}.</span>
-        <p className="flex-1 text-base leading-snug text-slate-50 print:text-black">{q}</p>
+        <span className="font-mono text-sm text-white mt-0.5">{i + 1}.</span>
+        <p className="flex-1 text-base leading-snug text-white print:text-black">{q}</p>
         <button onClick={() => onPin(q)} data-testid="brief-pin-button" title="Pin to shortlist"
           className={`icon-btn print:hidden ${isPinned(q) ? "text-amber-400" : ""}`}>
           <Pin size={15} fill={isPinned(q) ? "currentColor" : "none"} />
@@ -25,10 +25,10 @@ const QuestionList = ({ items, isPinned, onPin, testId }) => (
 
 const BriefBody = ({ brief, isPinned, onPin }) => (
   <div className="space-y-6">
-    <p className="text-lg leading-relaxed text-slate-100 print:text-black" data-testid="brief-snapshot">{brief.snapshot}</p>
+    <p className="text-lg leading-relaxed text-white print:text-black" data-testid="brief-snapshot">{brief.snapshot}</p>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Section title="Key facts">
-        <ul className="space-y-1.5 text-base text-slate-200 print:text-black" data-testid="brief-key-facts">
+        <ul className="space-y-1.5 text-base text-white print:text-black" data-testid="brief-key-facts">
           {brief.key_facts.map((f, i) => <li key={i}>• {f}</li>)}
         </ul>
       </Section>
@@ -37,7 +37,7 @@ const BriefBody = ({ brief, isPinned, onPin }) => (
           {brief.angles.map((a, i) => (
             <li key={i}>
               <p className="text-base font-semibold text-emerald-300 print:text-black">{a.title}</p>
-              <p className="text-sm text-slate-300 print:text-black">{a.why}</p>
+              <p className="text-sm text-white print:text-black">{a.why}</p>
             </li>
           ))}
         </ul>
@@ -57,12 +57,12 @@ const BriefBody = ({ brief, isPinned, onPin }) => (
 
 export const BriefDialog = ({ open, onOpenChange, brief, loading, onGenerate, setup, isPinned, onPin }) => (
   <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent className="print-area max-w-3xl max-h-[90vh] overflow-y-auto bg-[#0b1120] border-white/15 text-slate-50" data-testid="brief-dialog">
+    <DialogContent className="print-area max-w-3xl max-h-[90vh] overflow-y-auto bg-[#0b1120] border-white/15 text-white" data-testid="brief-dialog">
       <DialogHeader>
         <DialogTitle className="font-display text-2xl text-left print:text-black">
           Prep brief{setup.guest_name ? ` · ${setup.guest_name}` : ""}
         </DialogTitle>
-        {setup.topic && <p className="text-base text-slate-300 print:text-black">{setup.topic}</p>}
+        {setup.topic && <p className="text-base text-white print:text-black">{setup.topic}</p>}
       </DialogHeader>
       <div className="flex flex-wrap gap-2 print:hidden">
         <button onClick={onGenerate} disabled={loading || !setup.notes.trim()} data-testid="brief-generate-button"
@@ -78,7 +78,7 @@ export const BriefDialog = ({ open, onOpenChange, brief, loading, onGenerate, se
         )}
       </div>
       {!brief && !loading && (
-        <p className="text-base text-slate-300" data-testid="brief-empty">
+        <p className="text-base text-white" data-testid="brief-empty">
           {setup.notes.trim() ? "Turn your prep notes into a one-page brief: who they are, key facts, angles, openers and watch outs." : "Add prep notes first, then write your brief."}
         </p>
       )}

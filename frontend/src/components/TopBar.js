@@ -7,7 +7,7 @@ const Source = ({ icon: Icon, label, on, level, color, testId, onClick, compact 
     data-testid={testId}
     title={label}
     className={`flex items-center gap-2 rounded-full border ${compact ? "px-2.5" : "px-3"} py-1.5 text-xs font-mono uppercase tracking-widest transition-colors duration-200 ${
-      on ? "border-white/25 bg-white/10 text-white" : "border-white/15 text-slate-300 hover:text-white hover:border-white/30"
+      on ? "border-white/25 bg-white/10 text-white" : "border-white/15 text-white hover:text-white hover:border-white/30"
     }`}
   >
     <Icon size={14} style={{ color: on ? color : undefined }} />
@@ -18,7 +18,7 @@ const Source = ({ icon: Icon, label, on, level, color, testId, onClick, compact 
 
 const Tool = ({ icon: Icon, label, onClick, testId, compact }) => (
   <button onClick={onClick} data-testid={testId} title={label}
-    className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs text-slate-200 hover:text-white hover:bg-white/10 transition-colors">
+    className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs text-white hover:text-white hover:bg-white/10 transition-colors">
     <Icon size={15} /> {!compact && <span className="hidden xl:inline">{label}</span>}
   </button>
 );
@@ -34,7 +34,7 @@ export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onTog
       {!compact && (
         <div>
           <h1 className="font-display text-lg font-bold tracking-tight leading-none">Follow-Up</h1>
-          <p className="text-[0.72rem] font-mono uppercase tracking-[0.25em] text-slate-300">interview co-pilot</p>
+          <p className="text-[0.72rem] font-mono uppercase tracking-[0.25em] text-white">interview co-pilot</p>
         </div>
       )}
       <div className="flex items-center">
@@ -48,7 +48,7 @@ export const TopBar = ({ host, guest, live, onStart, onStop, onToggleHost, onTog
       <Source icon={Mic} label="You" on={host.active} level={host.active ? 0.6 : 0} color="#38bdf8" testId="toggle-host-mic" onClick={onToggleHost} compact={compact} />
       <Source icon={MonitorSpeaker} label="Guest" on={guest.active} level={guest.level} color="#10b981" testId="toggle-guest-audio" onClick={onToggleGuest} compact={compact} />
       {live && (
-        <span className="flex items-center gap-2 font-mono text-xs text-slate-300 px-2" data-testid="live-timer">
+        <span className="flex items-center gap-2 font-mono text-xs text-white px-2" data-testid="live-timer">
           <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" /> {elapsed}
         </span>
       )}

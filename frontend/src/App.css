@@ -4,14 +4,14 @@ body, .app-root { font-family: "Figtree", sans-serif; }
 .app-root {
   min-height: 100vh;
   background: #090d16;
-  color: #f8fafc;
+  color: #ffffff;
   font-family: "Figtree", sans-serif;
   background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 .font-display { font-family: "Bricolage Grotesque", sans-serif; }
 .font-mono, .eyebrow { font-family: "IBM Plex Mono", monospace; }
-.eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.2em; color: #dbe4ef; }
+.eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.2em; color: #ffffff; }
 .panel {
   background: rgba(17, 25, 44, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -26,17 +26,17 @@ body, .app-root { font-family: "Figtree", sans-serif; }
 .field {
   background: rgba(5, 10, 24, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  color: #f8fafc;
+  color: #ffffff;
 }
-.field::placeholder { color: #94a3b8; }
+.field::placeholder { color: #cbd5e1; }
 .field:focus { border-color: rgba(16, 185, 129, 0.6) !important; }
 .icon-btn {
   padding: 6px;
   border-radius: 6px;
-  color: #cbd5e1;
+  color: #ffffff;
   transition: color 0.15s, background-color 0.15s, opacity 0.15s;
 }
-.icon-btn:hover { color: #f8fafc; background: rgba(255, 255, 255, 0.08); }
+.icon-btn:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
 ::selection { background: rgba(16, 185, 129, 0.35); }
 
 @media print {

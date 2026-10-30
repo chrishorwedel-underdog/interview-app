@@ -16,7 +16,7 @@ export const CompactLayout = ({ panels, counts }) => {
       <nav className="sticky top-[var(--hdr,49px)] z-10 grid grid-cols-5 border-b border-white/10 bg-[#0b1120]" data-testid="compact-tabs">
         {TABS.map(([key, label, Icon]) => (
           <button key={key} onClick={() => setTab(key)} data-testid={`compact-tab-${key}`}
-            className={`flex flex-col items-center gap-0.5 py-2 text-[0.78rem] font-medium transition-colors border-b-2 ${tab === key ? "border-emerald-400 text-white" : "border-transparent text-slate-300 hover:text-white"}`}>
+            className={`flex flex-col items-center gap-0.5 py-2 text-[0.78rem] font-medium transition-colors border-b-2 ${tab === key ? "border-emerald-400 text-white" : "border-transparent text-white hover:text-white"}`}>
             <Icon size={15} />
             <span>{label}{counts[key] ? ` ${counts[key]}` : ""}</span>
           </button>
@@ -27,12 +27,18 @@ export const CompactLayout = ({ panels, counts }) => {
           <>
             {panels.talk}
             {panels.suggestions}
+            {panels.glance}
             {panels.pinned}
           </>
         ) : tab === "transcript" ? (
           <>
             {panels.talk}
             {panels.transcript}
+          </>
+        ) : tab === "coverage" ? (
+          <>
+            {panels.pacing}
+            {panels.coverage}
           </>
         ) : (
           panels[tab]

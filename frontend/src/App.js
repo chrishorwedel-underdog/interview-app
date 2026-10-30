@@ -11,6 +11,8 @@ import { LibrarySheet } from "@/components/LibrarySheet";
 import { CompactLayout } from "@/components/CompactLayout";
 import { TalkMeter } from "@/components/TalkMeter";
 import { BriefDialog } from "@/components/BriefDialog";
+import { PacingPanel } from "@/components/PacingPanel";
+import { BriefGlance } from "@/components/BriefGlance";
 import { useHostSpeech } from "@/hooks/useHostSpeech";
 import { useGuestAudio } from "@/hooks/useGuestAudio";
 import { useLocalState } from "@/hooks/useLocalState";
@@ -36,15 +38,17 @@ function mergeTurns(segments) {
   return out;
 }
 
-function useElapsed(t0, live) {
+function useElapsed(t0, live, lastTs) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     if (!live) return;
+    setNow(Date.now());
     const i = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(i);
   }, [live]);
-  const s = Math.max(0, Math.floor((now - t0) / 1000));
-  return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  const ms = Math.max(0, (live ? now : lastTs || t0) - t0);
+  const s = Math.floor(ms / 1000);
+  return { ms, label: `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}` };
 }
 
 export default function App() {
@@ -62,6 +66,7 @@ export default function App() {
   const [briefOpen, setBriefOpen] = useState(false);
   const [briefLoading, setBriefLoading] = useState(false);
   const [textScale, setTextScale] = useLocalState("fu-text-scale", 1);
+  const [targetMin, setTargetMin] = useLocalState("fu-target-min", 45);
   useEffect(() => { document.documentElement.style.fontSize = `${18 * textScale}px`; }, [textScale]);
   useEffect(() => {
     const header = document.querySelector("header");
@@ -240,7 +245,7 @@ export default function App() {
   }, []);
 
   const live = host.active || guest.active;
-  const elapsed = useElapsed(t0, live);
+  const { ms: elapsedMs, label: elapsed } = useElapsed(t0, live, segments.reduce((m, s) => Math.max(m, s.ts), 0));
 
   const startHost = () => { try { host.start(); } catch (e) { toast.error(e.message); } };
   const startGuest = async () => {
@@ -277,6 +282,8 @@ export default function App() {
   const panels = {
     setup: <SetupPanel setup={setup} setSetup={setSetup} hasBrief={!!brief} hasTranscript={segments.length > 0} onOpenBrief={() => setBriefOpen(true)} />,
     talk: <TalkMeter segments={segments} />,
+    pacing: <PacingPanel elapsedMs={elapsedMs} targetMin={targetMin} setTargetMin={setTargetMin} topics={topics} />,
+    glance: <BriefGlance brief={brief} onOpen={() => setBriefOpen(true)} />,
     transcript: (
       <TranscriptFeed turns={turns} interim={host.interim} guestName={setup.guest_name} t0={t0}
         onAdd={(sp, text) => addSegment(sp, text)} onClear={clearTranscript} guestSpeaking={guest.speaking} compact={compact} />
@@ -315,13 +322,19 @@ export default function App() {
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 md:p-6">
           <div className="lg:col-span-5 flex flex-col gap-4 lg:h-[calc(100vh-var(--hdr,70px)-2rem)] lg:sticky lg:top-[calc(var(--hdr,70px)+1rem)]">
             {panels.setup}
-            {panels.talk}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
+              {panels.talk}
+              {panels.pacing}
+            </div>
             {panels.transcript}
           </div>
           <div className="lg:col-span-7 flex flex-col gap-4">
             {panels.suggestions}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
-              {panels.coverage}
+              <div className="flex flex-col gap-4">
+                {panels.glance}
+                {panels.coverage}
+              </div>
               {panels.pinned}
             </div>
           </div>
