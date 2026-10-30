@@ -1,0 +1,136 @@
+{
+  "app_name": "EchoPilot - Live AI Interview Co-Pilot",
+  "archetype": "The Performance Pro (Tactical Command Center)",
+  "design_freedom_level": "High Density Dashboard & Live Call Tool",
+  "theme_strategy": {
+    "default_mode": "dark",
+    "toggle_supported": true,
+    "rationale": "Live video call co-pilots are positioned alongside Zoom/Meet windows or on secondary monitors. Dark mode with ultra-high contrast text and glowing tactical accent indicators reduces visual glare, fatigue, and distraction while maintaining instantaneous glanceability."
+  },
+  "typography": {
+    "font_family_heading": "Cabinet Grotesk / Outfit / System Sans",
+    "font_family_body": "Inter / JetBrains Mono (for timestamps/audio meters)",
+    "font_rules": [
+      "Banned for headers: generic unstyled Inter, space grotesk",
+      "Headings must use uppercase micro-eyebrows with generous letter spacing (tracking-widest)",
+      "Speaker transcripts must use clear visual distinction: Host text in cool slate, Guest text in warm amber/emerald highlight",
+      "Question cards require large prompt text (text-lg to text-xl, font-medium) for quick reading at 2 feet distance"
+    ],
+    "scale": {
+      "h1": "text-2xl sm:text-3xl font-bold tracking-tight",
+      "h2": "text-xl sm:text-2xl font-semibold tracking-tight",
+      "h3": "text-lg font-medium",
+      "body": "text-sm sm:text-base leading-relaxed",
+      "small_label": "text-xs font-mono uppercase tracking-widest text-muted-foreground"
+    }
+  },
+  "colors": {
+    "palette_name": "Tactical Dark Emerald & Cyber Slate",
+    "background": "#090d16",
+    "background_secondary": "#0f172a",
+    "card_background": "rgba(15, 23, 42, 0.75)",
+    "card_border": "rgba(255, 255, 255, 0.1)",
+    "text_primary": "#f8fafc",
+    "text_secondary": "#94a3b8",
+    "accent_host": "#38bdf8",
+    "accent_guest": "#10b981",
+    "accent_ai_pulse": "#8b5cf6",
+    "accent_pinned": "#f59e0b",
+    "live_indicator_pulse": "#ef4444",
+    "gradient_forbidden": "No full-screen gradients. Limit gradients to subtle 1px glows or backdrop blurs."
+  },
+  "layout_architecture": {
+    "mode": "Side-by-Side Dual Pane Command Center (Glanceable UI)",
+    "grid_structure": "grid-cols-1 lg:grid-cols-12 gap-4 p-4 md:p-6 min-h-screen",
+    "panels": {
+      "header_toolbar": "Top status bar: Audio input indicators (Mic + System/Tab Audio), Interviewer profile, Live duration counter, Quick preset switcher, Compact/Expanded view toggle.",
+      "left_column": "lg:col-span-5 - Live Setup & Speaker Transcript Stream. Contains Guest Card, Audio visualizers for Host & Guest, and auto-scrolling live transcript feed.",
+      "right_column": "lg:col-span-7 - Real-Time AI Suggestion Engine & Pinned Shortlist. Features live updating suggested follow-up questions categorized by topic/depth, with one-click pin & copy actions."
+    },
+    "compact_responsive_strategy": "When squeezed into a narrow side window (< 768px), switch to a tabbed or vertical stacked layout so the host can overlay it next to Google Meet or Zoom."
+  },
+  "key_features_to_implement": [
+    {
+      "name": "Interview Setup & Context Dock",
+      "description": "Form input for Guest Name, Role, Company, Topic, and a large rich notes area for background research (e.g., past talks, resume highlights, press articles)."
+    },
+    {
+      "name": "Dual Audio Capture Simulation & Live Status",
+      "description": "Start/Stop listening toggle with web audio API simulation for Host mic + Guest tab audio, active waveform visualizer bar, and real-time noise threshold stats."
+    },
+    {
+      "name": "Live Two-Speaker Transcript Feed",
+      "description": "Real-time scrolling log distinguishing Host vs Guest utterances with timestamps, confidence scores, key topic badges, and pause detection triggers."
+    },
+    {
+      "name": "Auto-Refreshing AI Follow-Up Generator",
+      "description": "Suggested questions generated instantly upon guest pause. Tagged by type (e.g., 'Deeper Probe', 'Challenging Counterpoint', 'Pivot Topic', 'Clarification')."
+    },
+    {
+      "name": "Question Shortlist & Pinning System",
+      "description": "Pin questions with hotkey or button click. Reorder pinned list, mark questions as 'Asked', copy to clipboard with instant toast notification."
+    },
+    {
+      "name": "Custom Prompt Tuning & Focus Filters",
+      "description": "Quick filters to tilt AI suggestions towards technical details, personal stories, controversial takes, or timeline questions."
+    }
+  ],
+  "components_and_libraries": {
+    "ui_primitives": "Shadcn/UI JS components (Dialog, Tabs, Badge, Button, Input, Textarea, Tooltip, Switch, ScrollArea, DropdownMenu)",
+    "icons": "lucide-react (Mic, MicOff, Volume2, Pin, PinOff, Copy, Check, Sparkles, User, AudioWaveform, Sliders, Settings, Play, Pause, RefreshCw, Zap, Bookmark)",
+    "notifications": "sonner (for instant toast feedback when questions are copied or pinned)",
+    "motion": "framer-motion for smooth entrance of new transcript lines and live AI question cards popping into view"
+  },
+  "media_assets": {
+    "host_avatar": "https://images.unsplash.com/photo-1581368129682-e2d66324045b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA0MTJ8MHwxfHNlYXJjaHwyfHxwb2RjYXN0JTIwaG9zdCUyMHBvcnRyYWl0JTIwc3BlYWtlcnxlbnwwfHx8fDE3OTMzNjcyNDl8MA&ixlib=rb-4.1.0&q=85",
+    "guest_avatars": [
+      {
+        "name": "Dr. Aris Thorne (AI Research Director)",
+        "url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwxfHx0ZWNoJTIwZXhlY3V0aXZlJTIwcG9ydHJhaXQlMjBoZWFkc2hvdHxlbnwwfHx8fDE3OTMzNjcyNTJ8MA&ixlib=rb-4.1.0&q=85"
+      },
+      {
+        "name": "Elena Rostova (VP of Product)",
+        "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwyfHx0ZWNoJTIwZXhlY3V0aXZlJTIwcG9ydHJhaXQlMjBoZWFkc2hvdHxlbnwwfHx8fDE3OTMzNjcyNTJ8MA&ixlib=rb-4.1.0&q=85"
+      },
+      {
+        "name": "Sarah Jenkins (Senior Tech Journalist)",
+        "url": "https://images.unsplash.com/photo-1699899657680-421c2c2d5064?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwzfHx0ZWNoJTIwZXhlY3V0aXZlJTIwcG9ydHJhaXQlMjBoZWFkc2hvdHxlbnwwfHx8fDE3OTMzNjcyNTJ8MA&ixlib=rb-4.1.0&q=85"
+      }
+    ]
+  },
+  "testing_and_accessibility": {
+    "data_testid_convention": "kebab-case, role-based identifiers on all buttons, audio triggers, transcript items, and pinned list elements.",
+    "required_test_ids": [
+      "start-listening-button",
+      "stop-listening-button",
+      "setup-guest-name-input",
+      "setup-topic-input",
+      "setup-notes-textarea",
+      "live-transcript-container",
+      "transcript-host-item",
+      "transcript-guest-item",
+      "ai-suggestions-panel",
+      "question-card",
+      "pin-question-button",
+      "copy-question-button",
+      "pinned-questions-panel",
+      "pinned-question-item",
+      "clear-pinned-button"
+    ],
+    "contrast_standard": "APCA 4.5:1 minimum on all text against background cards. Never rely solely on color; include icons and text badges."
+  },
+  "instructions_to_main_agent": [
+    "Build a single-page React app (using .js files) tailored specifically for live interviewers and podcasters.",
+    "Implement realistic live simulated microphone and system audio capture states with animated SVG waveform equalizer bars.",
+    "Provide demo presets (e.g., 'Tech Founder Deep Dive', 'AI Ethics Debate', 'Investigative Podcast') so the user can test instant live transcripts and automatic follow-up question generation without needing a live mic.",
+    "Ensure every AI suggestion card has quick-action buttons: Pin (adds to sticky shortlist), Copy, Mark as Asked, and Rate usefulness.",
+    "Include a side-window compact mode toggle to allow using the app in a narrow split-screen window beside video conferencing apps.",
+    "Strictly follow code organization with clear modular components inside src/components/."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Never use generic centered layouts or unstyled default Inter headings.",
+    "Include hover and active state transitions on every button and card.",
+    "Use sonner for notifications when pinning or copying items.",
+    "Ensure all interactive elements carry data-testid attributes."
+  ]
+}

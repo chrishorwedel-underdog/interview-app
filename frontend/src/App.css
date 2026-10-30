@@ -1,0 +1,38 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+.app-root {
+  min-height: 100vh;
+  background: #090d16;
+  color: #f8fafc;
+  font-family: "Figtree", sans-serif;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.font-display { font-family: "Bricolage Grotesque", sans-serif; }
+.font-mono, .eyebrow { font-family: "IBM Plex Mono", monospace; }
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: #94a3b8; }
+.panel {
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  backdrop-filter: blur(16px);
+}
+.panel-inner {
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+.field {
+  background: rgba(2, 6, 23, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f1f5f9;
+}
+.field:focus { border-color: rgba(16, 185, 129, 0.5) !important; }
+.icon-btn {
+  padding: 6px;
+  border-radius: 6px;
+  color: #94a3b8;
+  transition: color 0.15s, background-color 0.15s, opacity 0.15s;
+}
+.icon-btn:hover { color: #f8fafc; background: rgba(255, 255, 255, 0.08); }
+::selection { background: rgba(16, 185, 129, 0.35); }
